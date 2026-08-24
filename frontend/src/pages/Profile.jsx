@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
-import { getProfile, updateProfile } from "../api";
+import { updateProfile } from "../api";
+import { useAuth } from "../AuthContext";
 
 export default function Profile() {
-  const [user, setUser] = useState(null);
+  const { user, setUser } = useAuth();
 
   const [form, setForm] = useState({
     username: "",
@@ -12,26 +13,14 @@ export default function Profile() {
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
 
-  const fetchProfile = async () => {
-    try {
-      const response = await getProfile();
-
-      const profile = response.data.user;
-
-      setUser(profile);
-
-      setForm({
-        username: profile.username,
-        email: profile.email,
-      });
-    } catch (err) {
-      setError("Unable to load profile.");
-    }
-  };
-
   useEffect(() => {
-    fetchProfile();
-  }, []);
+    if (user) {
+      setForm({
+        username: user.username,
+        email: user.email,
+      });
+    }
+  }, [user]);
 
   const handleChange = (e) => {
     setForm({
@@ -47,13 +36,10 @@ export default function Profile() {
     setError("");
 
     try {
-      await updateProfile({
-        user: form,
-      });
+      const response = await updateProfile(form);
 
+      setUser(response.data);
       setMessage("Profile updated successfully.");
-
-      fetchProfile();
     } catch (err) {
       setError(
         err.response?.data?.errors?.join(", ") ||
@@ -70,9 +56,7 @@ export default function Profile() {
     <div>
       <h1>My Profile</h1>
 
-      <p>
-        Role: {user.role}
-      </p>
+      <p>Role: {user.role}</p>
 
       {message && <p>{message}</p>}
       {error && <p>{error}</p>}
@@ -80,7 +64,6 @@ export default function Profile() {
       <form onSubmit={handleSubmit}>
         <div>
           <label>Username</label>
-
           <input
             name="username"
             value={form.username}
@@ -90,7 +73,6 @@ export default function Profile() {
 
         <div>
           <label>Email</label>
-
           <input
             type="email"
             name="email"
@@ -99,9 +81,7 @@ export default function Profile() {
           />
         </div>
 
-        <button type="submit">
-          Update Profile
-        </button>
+        <button type="submit">Update Profile</button>
       </form>
     </div>
   );

@@ -1,23 +1,14 @@
 import { Link, useNavigate } from "react-router-dom";
-import { signOut } from "../api";
+import { useAuth } from "../AuthContext";
 
-export default function Navbar() {
+export default function NavBar() {
+  const { user, logout } = useAuth();
   const navigate = useNavigate();
 
-  const token = localStorage.getItem("token");
-
-  const handleLogout = async () => {
-    try {
-      if (token) {
-        await signOut();
-      }
-    } catch (err) {
-      console.error("Logout failed:", err);
-    } finally {
-      localStorage.removeItem("token");
-      navigate("/login");
-    }
-  };
+  async function handleLogout() {
+    await logout();
+    navigate("/login");
+  }
 
   return (
     <nav>
@@ -25,10 +16,11 @@ export default function Navbar() {
       {" | "}
       <Link to="/blogs">Blogs</Link>
 
-      {token ? (
+      {user ? (
         <>
           {" | "}
-          <Link to="/profile">Profile</Link>
+          <Link to="/profile">{user.username}</Link>
+          {user.role === "admin" && " (admin)"}
           {" | "}
           <button onClick={handleLogout}>Logout</button>
         </>

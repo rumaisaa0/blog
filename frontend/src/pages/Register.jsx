@@ -1,9 +1,11 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { signUp } from "../api";
+import { useAuth } from "../AuthContext";
 
 export default function Register() {
   const navigate = useNavigate();
+  const { setUser } = useAuth();
 
   const [form, setForm] = useState({
     username: "",
@@ -26,19 +28,20 @@ export default function Register() {
     setError("");
 
     try {
-      await signUp({
-        user: form,
-      });
+      const response = await signUp(form);
 
-      navigate("/login");
+      localStorage.setItem("token", response.data.token);
+      setUser(response.data.user);
+
+      navigate("/blogs");
     } catch (err) {
       const errors = err.response?.data?.errors;
 
-      setError(
-        Array.isArray(errors)
-          ? errors.join(", ")
-          : "Registration failed"
-      );
+      if (Array.isArray(errors)) {
+        setError(errors.join(", "));
+      } else {
+        setError("Registration failed");
+      }
     }
   };
 

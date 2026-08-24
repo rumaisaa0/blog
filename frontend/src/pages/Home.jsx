@@ -1,7 +1,8 @@
 import { Link } from "react-router-dom";
+import { useAuth } from "../AuthContext";
 
 export default function Home() {
-  const token = localStorage.getItem("token");
+  const { user } = useAuth();
 
   return (
     <div>
@@ -11,7 +12,7 @@ export default function Home() {
 
       <Link to="/blogs">View Blogs</Link>
 
-      {!token && (
+      {!user && (
         <>
           {" | "}
           <Link to="/login">Login</Link>

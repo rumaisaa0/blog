@@ -16,15 +16,13 @@
 #  index_users_on_username              (username) UNIQUE
 class User < ApplicationRecord
   include Devise::JWT::RevocationStrategies::JTIMatcher
-  # Include default devise modules. Others available are:
-  # :confirmable, :lockable, :timeoutable, :trackable and :omniauthable
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :validatable,
          :jwt_authenticatable, jwt_revocation_strategy: self
 
-  has_many :categories
-  has_many :blogs
-  has_many :comments
+  has_many :categories, dependent: :restrict_with_error
+  has_many :blogs, dependent: :restrict_with_error
+  has_many :comments, dependent: :restrict_with_error
   validates :username, presence: true
   validates :email, presence: true, uniqueness: true
   validates :role, presence: true, inclusion: { in: %w[admin registered] }

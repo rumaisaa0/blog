@@ -5,7 +5,7 @@ Rails.application.routes.draw do
       }
   # For details on the DSL available within this file, see https://guides.rubyonrails.org/routing.html
   get 'users/view_profile', to: 'users#view_profile'
-  patch '/users/update_profile', to: 'users#update'
+  patch '/users/update_profile', to: 'users#update_profile'
 
   # Admin user management
   resources :users, only: [:index, :show, :update, :destroy]

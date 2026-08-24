@@ -1,42 +1,35 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import {getBlog,deleteBlog,getComments,createComment} from "../api";
+import { getBlog, deleteBlog, createComment } from "../api";
+import { useAuth } from "../AuthContext";
 import CommentList from "../components/CommentList";
 import CommentForm from "../components/CommentForm";
 
 export default function BlogDetails() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { user } = useAuth();
 
   const [blog, setBlog] = useState(null);
-  const [comments, setComments] = useState([]);
   const [error, setError] = useState("");
 
-  const fetchData = async () => {
+  async function fetchBlog() {
     try {
-      const blogResponse = await getBlog(id);
-      const commentsResponse = await getComments(id);
-
-      setBlog(blogResponse.data);
-      setComments(commentsResponse.data);
+      const response = await getBlog(id);
+      setBlog(response.data);
     } catch (err) {
       setError("Unable to load blog.");
     }
-  };
+  }
 
   useEffect(() => {
-    fetchData();
+    fetchBlog();
   }, [id]);
 
   const handleComment = async (content) => {
     try {
-      await createComment(id, {
-        comment: {
-          content,
-        },
-      });
-
-      fetchData();
+      await createComment(id, content);
+      fetchBlog();
     } catch (err) {
       setError(
         err.response?.data?.error ||
@@ -69,31 +62,25 @@ export default function BlogDetails() {
     return <p>Loading...</p>;
   }
 
+  let canManage = false;
+  if (user && (user.id === blog.user.id || user.role === "admin")) {
+    canManage = true;
+  }
+
   return (
     <div>
       <h1>{blog.title}</h1>
 
       <p>{blog.content}</p>
 
-      <p>
-        Category: {blog.category?.name}
-      </p>
+      <p>Category: {blog.category?.name}</p>
 
-      <p>
-        Author: {blog.user?.username}
-      </p>
+      <p>Author: {blog.user?.username}</p>
 
-      {localStorage.getItem("token") && (
+      {canManage && (
         <>
-          <Link to={`/blogs/${id}/edit`}>
-            Edit
-          </Link>
-
-          {" "}
-
-          <button onClick={handleDelete}>
-            Delete
-          </button>
+          <Link to={`/blogs/${id}/edit`}>Edit</Link>{" "}
+          <button onClick={handleDelete}>Delete</button>
         </>
       )}
 
@@ -101,11 +88,9 @@ export default function BlogDetails() {
 
       <h2>Comments</h2>
 
-      <CommentList comments={comments} />
+      <CommentList comments={blog.comments} />
 
-      {localStorage.getItem("token") && (
-        <CommentForm onSubmit={handleComment} />
-      )}
+      {user && <CommentForm onSubmit={handleComment} />}
     </div>
   );
 }

@@ -1,11 +1,13 @@
 import { useEffect, useState } from "react";
-import {useNavigate,useParams,} from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
-import {getBlog,updateBlog,getCategories} from "../api";
+import { getBlog, updateBlog, getCategories } from "../api";
+import { useAuth } from "../AuthContext";
 
 export default function EditBlog() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { user } = useAuth();
 
   const [form, setForm] = useState({
     title: "",
@@ -15,14 +17,24 @@ export default function EditBlog() {
 
   const [categories, setCategories] = useState([]);
   const [error, setError] = useState("");
+  const [allowed, setAllowed] = useState(true);
 
   useEffect(() => {
-    const loadData = async () => {
+    if (!user) {
+      return;
+    }
+
+    async function loadData() {
       try {
         const blogResponse = await getBlog(id);
         const categoriesResponse = await getCategories();
 
         const blog = blogResponse.data;
+
+        if (blog.user.id !== user.id && user.role !== "admin") {
+          setAllowed(false);
+          return;
+        }
 
         setForm({
           title: blog.title,
@@ -37,10 +49,10 @@ export default function EditBlog() {
             "Unable to load blog."
         );
       }
-    };
+    }
 
     loadData();
-  }, [id]);
+  }, [id, user]);
 
   const handleChange = (e) => {
     setForm({
@@ -55,10 +67,8 @@ export default function EditBlog() {
 
     try {
       await updateBlog(id, {
-        blog: {
-          ...form,
-          category_id: Number(form.category_id),
-        },
+        ...form,
+        category_id: Number(form.category_id),
       });
 
       navigate(`/blogs/${id}`);
@@ -70,6 +80,10 @@ export default function EditBlog() {
     }
   };
 
+  if (!allowed) {
+    return <p>You can only edit your own blogs.</p>;
+  }
+
   return (
     <div>
       <h1>Edit Blog</h1>
@@ -79,7 +93,6 @@ export default function EditBlog() {
       <form onSubmit={handleSubmit}>
         <div>
           <label>Title</label>
-
           <input
             name="title"
             value={form.title}
@@ -90,7 +103,6 @@ export default function EditBlog() {
 
         <div>
           <label>Content</label>
-
           <textarea
             name="content"
             value={form.content}
@@ -101,7 +113,6 @@ export default function EditBlog() {
 
         <div>
           <label>Category</label>
-
           <select
             name="category_id"
             value={form.category_id}
@@ -109,21 +120,15 @@ export default function EditBlog() {
             required
           >
             <option value="">Select category</option>
-
             {categories.map((category) => (
-              <option
-                key={category.id}
-                value={category.id}
-              >
+              <option key={category.id} value={category.id}>
                 {category.name}
               </option>
             ))}
           </select>
         </div>
 
-        <button type="submit">
-          Update Blog
-        </button>
+        <button type="submit">Update Blog</button>
       </form>
     </div>
   );

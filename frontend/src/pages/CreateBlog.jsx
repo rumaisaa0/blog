@@ -37,10 +37,8 @@ export default function CreateBlog() {
 
     try {
       const response = await createBlog({
-        blog: {
-          ...form,
-          category_id: Number(form.category_id),
-        },
+        ...form,
+        category_id: Number(form.category_id),
       });
 
       navigate(`/blogs/${response.data.id}`);
@@ -61,7 +59,6 @@ export default function CreateBlog() {
       <form onSubmit={handleSubmit}>
         <div>
           <label>Title</label>
-
           <input
             name="title"
             value={form.title}
@@ -72,7 +69,6 @@ export default function CreateBlog() {
 
         <div>
           <label>Content</label>
-
           <textarea
             name="content"
             value={form.content}
@@ -83,7 +79,6 @@ export default function CreateBlog() {
 
         <div>
           <label>Category</label>
-
           <select
             name="category_id"
             value={form.category_id}
@@ -91,21 +86,15 @@ export default function CreateBlog() {
             required
           >
             <option value="">Select category</option>
-
             {categories.map((category) => (
-              <option
-                key={category.id}
-                value={category.id}
-              >
+              <option key={category.id} value={category.id}>
                 {category.name}
               </option>
             ))}
           </select>
         </div>
 
-        <button type="submit">
-          Create Blog
-        </button>
+        <button type="submit">Create Blog</button>
       </form>
     </div>
   );

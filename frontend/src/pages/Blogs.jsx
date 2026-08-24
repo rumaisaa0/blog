@@ -1,10 +1,13 @@
 import { useEffect, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { getBlogs, deleteBlog } from "../api";
+import { useAuth } from "../AuthContext";
 import BlogCard from "../components/BlogCard";
 import Pagination from "../components/Pagination";
 
 export default function Blogs() {
+  const { user } = useAuth();
+
   const [blogs, setBlogs] = useState([]);
   const [pagination, setPagination] = useState(null);
   const [search, setSearch] = useState("");
@@ -72,9 +75,7 @@ export default function Blogs() {
 
       <br />
 
-      {localStorage.getItem("token") && (
-        <Link to="/blogs/new">Create Blog</Link>
-      )}
+      {user && <Link to="/blogs/new">Create Blog</Link>}
 
       <hr />
 
