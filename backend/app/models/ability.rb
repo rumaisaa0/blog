@@ -4,25 +4,13 @@ class Ability
   include CanCan::Ability
 
   def initialize(user)
-    user ||= User.new  # guest
+    user ||= User.new # guest
 
-    if user.persisted? && user.role == "admin"
+    if user.persisted? && user.role == 'admin'
       can :manage, :all
 
-    elsif user.persisted? && user.role == "registered"
-      can :read, Category
-      can :read, Blog
-      can :create, Blog
-      can :update, Blog, user_id: user.id
-      can :destroy, Blog, user_id: user.id
-      can :create, Comment
-      can :read, Comment
-      can :read, User
-      can :update, User, id: user.id
-      can :manage, BlogContributor, blog: { user_id: user.id }
-      can :create, BlogEditRequest, contributor_id: user.id
-      can :manage, BlogEditRequest, blog: { user_id: user.id }
-      
+    elsif user.persisted? && user.role == 'registered'
+      registered_permissions(user)
 
     else
       # guest — not logged in
@@ -54,5 +42,22 @@ class Ability
     #
     # See the wiki for details:
     # https://github.com/CanCanCommunity/cancancan/blob/develop/docs/define_check_abilities.md
+  end
+
+  private
+
+  def registered_permissions(user)
+    can :read, Category
+    can :read, Blog
+    can :create, Blog
+    can :update, Blog, user_id: user.id
+    can :destroy, Blog, user_id: user.id
+    can :create, Comment
+    can :read, Comment
+    can :read, User
+    can :update, User, id: user.id
+    can :manage, BlogContributor, blog: { user_id: user.id }
+    can :create, BlogEditRequest, contributor_id: user.id
+    can :manage, BlogEditRequest, blog: { user_id: user.id }
   end
 end

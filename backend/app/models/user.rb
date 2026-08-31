@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # Table name: users
 #  id                     :bigint           not null, primary key
 #  email                  :string           default(""), not null
@@ -26,8 +28,7 @@ class User < ApplicationRecord
   validates :username, presence: true, uniqueness: { scope: :organization_id }
   validates :email, presence: true, uniqueness: { scope: :organization_id }
   validates :role, presence: true, inclusion: { in: %w[admin registered] }
-  def as_json(options={})
+  def as_json(options = {})
     super(options.merge(only: %i[id email username role]))
   end
 end
-

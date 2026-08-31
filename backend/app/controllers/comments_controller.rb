@@ -1,16 +1,17 @@
+# frozen_string_literal: true
+
 class CommentsController < ApplicationController
   load_and_authorize_resource
   def index
-   byebug
-   if params[:blog_id]
+    if params[:blog_id]
       @blog = Blog.find(params[:blog_id])
       @comments = @blog.comments
-   elsif params[:category_id]
+    elsif params[:category_id]
       @category = Category.find(params[:category_id])
       @comments = @category.comments
-   end
+    end
 
-   render json: @comments
+    render json: @comments
   end
 
   def show
@@ -18,26 +19,13 @@ class CommentsController < ApplicationController
   end
 
   def create
-    #byebug
-    if params[:blog_id]
-    blog = Blog.find(params[:blog_id])
-    @comment = blog.comments.create(comment_params.merge(user: current_user))
+    @comment = build_comment
 
     if @comment.save
       render json: @comment, status: :created
     else
       render json: { errors: @comment.errors.full_messages }, status: :unprocessable_entity
     end
-    elsif params[:category_id]
-      category = Category.find(params[:category_id])
-      @comment = category.comments.create(comment_params.merge(user: current_user))
-
-      if @comment.save
-       render json: @comment, status: :created
-      else
-       render json: { errors: @comment.errors.full_messages }, status: :unprocessable_entity
-      end
-    end 
   end
 
   def update
@@ -50,11 +38,22 @@ class CommentsController < ApplicationController
 
   def destroy
     @comment.destroy
-    render json: { message: 'comment deleted  successful!'}, status: :ok and return
+    render json: { message: 'comment deleted  successful!' }, status: :ok and return
   end
 
   private
+
   def comment_params
     params.require(:comment).permit(:content)
+  end
+
+  def build_comment
+    if params[:blog_id]
+      Blog.find(params[:blog_id]).comments
+          .build(comment_params.merge(user: current_user))
+    elsif params[:category_id]
+      Category.find(params[:category_id]).comments
+              .build(comment_params.merge(user: current_user))
+    end
   end
 end

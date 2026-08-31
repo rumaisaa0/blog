@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class CategoriesController < ApplicationController
   respond_to :json
   load_and_authorize_resource
@@ -8,5 +10,4 @@ class CategoriesController < ApplicationController
   def show
     render json: @category
   end
-
 end

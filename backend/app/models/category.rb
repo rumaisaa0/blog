@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # Table name: categories
 #  id         :bigint           not null, primary key
 #  name       :string

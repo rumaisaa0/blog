@@ -1,7 +1,9 @@
+# frozen_string_literal: true
+
 class UsersController < ApplicationController
   respond_to :json
   before_action :authenticate_user!
-  load_and_authorize_resource only: [:index, :show, :update, :destroy]
+  load_and_authorize_resource only: %i[index show update destroy]
 
   def view_profile
     authorize! :read, current_user
@@ -13,18 +15,18 @@ class UsersController < ApplicationController
     authorize! :update, current_user
 
     if current_user.update(user_params)
-      render json: {user: current_user, message: 'Profile updated successfully!'}, status: :ok
+      render json: { user: current_user, message: 'Profile updated successfully!' }, status: :ok
     else
-      render json: {errors: current_user.errors.full_messages }, status: :unprocessable_entity
+      render json: { errors: current_user.errors.full_messages }, status: :unprocessable_entity
     end
   end
 
   def index
-    render json: {users: @users}
+    render json: { users: @users }
   end
 
   def show
-    render json: {users: @user}
+    render json: { users: @user }
   end
 
   def update

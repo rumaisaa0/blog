@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # Table name: comments
 #  id               :bigint           not null, primary key
 #  content          :text

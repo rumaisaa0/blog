@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # Table name: blogs
 #  id          :bigint           not null, primary key
 #  title       :string
@@ -19,7 +21,7 @@ class Blog < ApplicationRecord
   has_many :comments, as: :commentable
   has_one_attached :image
   acts_as_tenant :organization
-  validates :title, presence: true ,length: { maximum: 255 }
+  validates :title, presence: true, length: { maximum: 255 }
   validates :content, presence: true
   validates :category, presence: true
 end

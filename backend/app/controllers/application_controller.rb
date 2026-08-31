@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class ApplicationController < ActionController::API
   set_current_tenant_through_filter
   before_action :devise_params, if: :devise_controller?
@@ -7,10 +9,13 @@ class ApplicationController < ActionController::API
   end
 
   protected
+
   def devise_params
     devise_parameter_sanitizer.permit(:sign_up, keys: [:username])
   end
+
   private
+
   def set_current_tenant
     subdomain = request.subdomain
 
@@ -19,8 +24,7 @@ class ApplicationController < ActionController::API
     if organization
       ActsAsTenant.current_tenant = organization
     else
-      render json: { error: "Organization not found" }, status: :not_found
+      render json: { error: 'Organization not found' }, status: :not_found
     end
   end
 end
- 
