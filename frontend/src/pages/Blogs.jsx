@@ -1,21 +1,24 @@
 import { useEffect, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { getBlogs, deleteBlog } from "../api";
-import { useAuth } from "../AuthContext";
+import { useSelector } from "react-redux";
 import BlogCard from "../components/BlogCard";
 import Pagination from "../components/Pagination";
-
+import { toast } from "react-toastify";
 export default function Blogs() {
-  const { user } = useAuth();
-
+  
+  const user = useSelector((state) => state.auth.user);
   const [blogs, setBlogs] = useState([]);
   const [pagination, setPagination] = useState(null);
   const [search, setSearch] = useState("");
 
   const [searchParams, setSearchParams] = useSearchParams();
 
-  const page = searchParams.get("page") || 1;
-
+  const rawPage = Number(searchParams.get("page"));
+  const page = Number.isFinite(rawPage) && rawPage > 0 ? rawPage : 1;
+  useEffect(() => {
+    setSearch(searchParams.get("search") || "");
+  }, [searchParams]);
   const fetchBlogs = async () => {
     try {
       const response = await getBlogs({
@@ -26,36 +29,41 @@ export default function Blogs() {
       setBlogs(response.data.blogs);
       setPagination(response.data.pagination);
     } catch (err) {
-      console.error(err);
+      toast.error(err.response?.data?.error )
     }
   };
-
+ 
   useEffect(() => {
     fetchBlogs();
   }, [page, searchParams.get("search")]);
+    useEffect(() => {
+    const timer = setTimeout(() => {
+      const currentSearch = searchParams.get("search") || "";
 
-  const handleSearch = (e) => {
-    e.preventDefault();
+      if (search !== currentSearch) {
+        setSearchParams({ page: 1,
+          ...(search ? { search } : {}),
+        });
+      }
+    }, 300);
 
-    setSearchParams({
-      page: 1,
-      ...(search ? { search } : {}),
-    });
+    return () => clearTimeout(timer);
+  }, [search]);
+
+  const handleSearchChange = (e) => {
+    setSearch(e.target.value);
   };
-
   const handleDelete = async (id) => {
     if (!window.confirm("Delete this blog?")) {
       return;
     }
 
     try {
-      await deleteBlog(id);
+      const response = await deleteBlog(id);
+      toast.success(response?.data?.message || "Blog deleted successfully");
       fetchBlogs();
     } catch (err) {
-      alert(
-        err.response?.data?.error ||
-          "You are not authorized to delete this blog."
-      );
+      toast.error("You are not authorized to delete this blog");
     }
   };
 
@@ -63,33 +71,32 @@ export default function Blogs() {
     <div>
       <h1>Blogs</h1>
 
-      <form onSubmit={handleSearch}>
-        <input
+      <div className="search-form">
+        <input type="text"
           placeholder="Search blogs..."
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-        />
-
-        <button type="submit">Search</button>
-      </form>
+          value={search}   onChange={handleSearchChange}  />
+      </div>
 
       <br />
 
-      {user && <Link to="/blogs/new">Create Blog</Link>}
+      {user && <Link className= "link-btn" to="/blogs/new">Create Blog</Link>}
 
       <hr />
-
-      {blogs.length === 0 ? (
-        <p>No blogs found.</p>
-      ) : (
-        blogs.map((blog) => (
-          <BlogCard
-            key={blog.id}
-            blog={blog}
-            onDelete={handleDelete}
-          />
-        ))
-      )}
+      <table>
+        <thead>
+         <tr><h1>
+            <th>Title</th></h1>
+            <th>Content</th>
+            <th>Category</th>
+            <th>Author</th>
+            <th>Actions</th>
+         </tr>
+        </thead>
+        <tbody>
+            {blogs.map((blog) => ( <BlogCard key={blog.id} blog={blog}  onDelete={handleDelete} />
+            ))}
+        </tbody>
+      </table>
 
       {pagination && (
         <Pagination pagination={pagination} />

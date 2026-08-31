@@ -1,17 +1,20 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
 import { BrowserRouter } from "react-router-dom";
-
+import { Provider } from "react-redux";
+import { store } from "./store";
 import App from "./App";
-import { AuthProvider } from "./AuthContext";
 import "./index.css";
-
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import "./i18n";
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
-    <BrowserRouter>
-      <AuthProvider>
+    <Provider store={store}>
+      <BrowserRouter>
         <App />
-      </AuthProvider>
-    </BrowserRouter>
+        <ToastContainer />
+      </BrowserRouter>
+    </Provider>
   </React.StrictMode>
 );

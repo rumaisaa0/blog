@@ -1,12 +1,14 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
+import { useDispatch } from "react-redux";
 import { signUp } from "../api";
-import { useAuth } from "../AuthContext";
-
+import { setUser } from "../slice/Auth";
+import { toast } from "react-toastify";
+import { useTranslation } from "react-i18next";
 export default function Register() {
   const navigate = useNavigate();
-  const { setUser } = useAuth();
-
+  const dispatch = useDispatch();
+  const { t } = useTranslation();
   const [form, setForm] = useState({
     username: "",
     email: "",
@@ -14,93 +16,63 @@ export default function Register() {
     password_confirmation: "",
   });
 
-  const [error, setError] = useState("");
-
   const handleChange = (e) => {
-    setForm({
-      ...form,
+    setForm((prev) => ({
+      ...prev,
       [e.target.name]: e.target.value,
-    });
+    }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError("");
 
     try {
       const response = await signUp(form);
 
       localStorage.setItem("token", response.data.token);
-      setUser(response.data.user);
+      dispatch(setUser(response.data.user));
 
+      toast.success(response.data.message);
       navigate("/blogs");
     } catch (err) {
       const errors = err.response?.data?.errors;
-
-      if (Array.isArray(errors)) {
-        setError(errors.join(", "));
-      } else {
-        setError("Registration failed");
-      }
+      toast.error(Array.isArray(errors) ? errors.join(", ") : t("auth.registrationFailed"));
     }
   };
 
   return (
     <div>
-      <h1>Register</h1>
-
-      {error && <p>{error}</p>}
+      <h1>{t("common.register")}</h1>
 
       <form onSubmit={handleSubmit}>
         <div>
-          <label>Username</label>
-          <input
-            name="username"
-            value={form.username}
-            onChange={handleChange}
-            required
-          />
+          <label>{t("auth.username")}</label>
+          <input name="username" value={form.username} onChange={handleChange} required />
         </div>
 
         <div>
-          <label>Email</label>
-          <input
-            type="email"
-            name="email"
-            value={form.email}
-            onChange={handleChange}
-            required
-          />
+          <label>{t("auth.email")}</label>
+          <input type="email" name="email" value={form.email} onChange={handleChange} required />
         </div>
 
         <div>
-          <label>Password</label>
-          <input
-            type="password"
-            name="password"
-            value={form.password}
-            onChange={handleChange}
-            required
-          />
+          <label>{t("auth.password")}</label>
+          <input type="password" name="password" value={form.password} onChange={handleChange} required />
         </div>
 
         <div>
-          <label>Confirm Password</label>
-          <input
-            type="password"
-            name="password_confirmation"
-            value={form.password_confirmation}
-            onChange={handleChange}
-            required
-          />
+          <label>{t("auth.confirmPassword")}</label>
+          <input type="password" name="password_confirmation" value={form.password_confirmation} onChange={handleChange} required />
         </div>
 
-        <button type="submit">Register</button>
+        <button type="submit">{t("common.register")}</button>
       </form>
 
       <p>
-        Already have an account? <Link to="/login">Login</Link>
+        {t("auth.alreadyAccount") }   <Link to="/login">  {t("common.login")}</Link>
       </p>
     </div>
   );
 }
+
+

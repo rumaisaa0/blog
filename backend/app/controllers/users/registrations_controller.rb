@@ -14,12 +14,12 @@ class Users::RegistrationsController < Devise::RegistrationsController
   def create
      super do |resource|
        if resource.persisted?
-         token = Warden::JWTAuth::UserEncoder.new.call(resource, :user, nil).first
-         render json: {user: resource, token: token, message: 'login and register successful'}, status: :created and return
+         render json: {message: "Registration successful. Please check your email to confirm your account." }, status: :created and return
+       else 
+        render json: { errors: resource.errors.full_messages }, status: :unprocessable_entity and return
        end
      end
   end
-
   # GET /resource/edit
   #def edit
   #   super
@@ -47,15 +47,7 @@ class Users::RegistrationsController < Devise::RegistrationsController
   # end
 
   # protected
-  private
 
-  def respond_to_on_destroy
-    if current_user
-      head :ok
-    else
-      head :unauthorized
-    end
-  end
   # If you have extra params to permit, append them to the sanitizer.
   # def configure_sign_up_params
   #   devise_parameter_sanitizer.permit(:sign_up, keys: [:attribute])

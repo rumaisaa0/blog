@@ -7,10 +7,13 @@ class BlogsController < ApplicationController
     blogs = Blog.includes(:user, :category)
 
     if params[:search].present?
-      blogs = blogs.where("title LIKE :q OR content LIKE :q", q: "%#{params[:search]}%")
+      blogs = @blogs.where("title LIKE :query OR content LIKE :query", query: "%#{params[:search].strip}%")
     end
 
-    blogs = blogs.paginate(page: params[:page], per_page: 10)
+    page = params[:page].to_s
+    page = 1 if page.blank? || page == "NaN" || page.to_i <= 0
+
+    blogs = blogs.paginate(page: page, per_page: 10)
 
     render json: {
       blogs: blogs,
@@ -22,36 +25,44 @@ class BlogsController < ApplicationController
     }
   end
 
+
   def show
-    render json: @blog.as_json(include: [:comments, :category, :user])
+    #render json: @blog.as_json(include: [:comments, :category, :user])
+    render json:{blog: @blog.as_json( include: { comments: { only: [:id, :content, :user_id] }, contributors: {
+  only: [:id, :username]},
+    category: { only: [:id, :name] }, user: { only: [:id, :username] }}).merge(image_url: @blog.image.attached? ? url_for(@blog.image) : nil)
+  }
+
   end
 
   def create
     @blog.user = current_user
 
     if @blog.save
-      render json: @blog, status: :created
+      render json: {blog: @blog, message: "blog created"} , status: :created
     else
       render json: { errors: @blog.errors.full_messages }, status: :unprocessable_entity
     end
   end
 
   def update
+    #byebug
     if @blog.update(blog_params)
-      render json: @blog
+      render json: {blog: @blog, message: "blog update successful"}
     else
       render json: { errors: @blog.errors.full_messages }, status: :unprocessable_entity
     end
   end
 
   def destroy
+    #byebug
     @blog.destroy
-    head :no_content
+    render json: { message: 'blog delete  successful!'}, status: :ok and return
   end
 
   private
 
   def blog_params
-    params.require(:blog).permit(:title, :content, :category_id)
+    params.require(:blog).permit(:title, :content, :category_id, :image)
   end
 end

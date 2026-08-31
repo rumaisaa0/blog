@@ -1,17 +1,17 @@
 import { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { updateProfile } from "../api";
-import { useAuth } from "../AuthContext";
-
+import { setUser } from "../slice/Auth";
+import { toast } from "react-toastify";
+import { useTranslation } from "react-i18next";
 export default function Profile() {
-  const { user, setUser } = useAuth();
-
+  const user = useSelector((state) => state.auth?.user ?? null);
+  const dispatch = useDispatch();
+  const { t } = useTranslation();
   const [form, setForm] = useState({
     username: "",
     email: "",
   });
-
-  const [message, setMessage] = useState("");
-  const [error, setError] = useState("");
 
   useEffect(() => {
     if (user) {
@@ -23,28 +23,21 @@ export default function Profile() {
   }, [user]);
 
   const handleChange = (e) => {
-    setForm({
-      ...form,
+    setForm((prev) => ({
+      ...prev,
       [e.target.name]: e.target.value,
-    });
+    }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    setMessage("");
-    setError("");
-
     try {
       const response = await updateProfile(form);
-
-      setUser(response.data);
-      setMessage("Profile updated successfully.");
+      dispatch(setUser(response.data.user));
+      toast.success(response.data.message);
     } catch (err) {
-      setError(
-        err.response?.data?.errors?.join(", ") ||
-          "Unable to update profile."
-      );
+      toast.error(err.response?.data?.errors?.join(", ") || t("auth.updateFailed"));
     }
   };
 
@@ -55,30 +48,17 @@ export default function Profile() {
   return (
     <div>
       <h1>My Profile</h1>
-
       <p>Role: {user.role}</p>
-
-      {message && <p>{message}</p>}
-      {error && <p>{error}</p>}
 
       <form onSubmit={handleSubmit}>
         <div>
-          <label>Username</label>
-          <input
-            name="username"
-            value={form.username}
-            onChange={handleChange}
-          />
+          <label>{t("auth.username")}</label>
+          <input name="username" value={form.username} onChange={handleChange} />
         </div>
 
         <div>
-          <label>Email</label>
-          <input
-            type="email"
-            name="email"
-            value={form.email}
-            onChange={handleChange}
-          />
+          <label>{t("auth.email")}</label>
+          <input type="email" name="email" value={form.email} onChange={handleChange} />
         </div>
 
         <button type="submit">Update Profile</button>

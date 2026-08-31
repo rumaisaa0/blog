@@ -8,7 +8,9 @@ import BlogDetails from "../pages/BlogDetails";
 import CreateBlog from "../pages/CreateBlog";
 import EditBlog from "../pages/EditBlog";
 import Profile from "../pages/Profile";
+import VerifyEmail from "../pages/VerifyEmail";
 import AuthRoute from "./AuthRoute";
+import ManageContributors from "../pages/ManageContributors";
 
 export default function AppRoutes() {
   return (
@@ -18,7 +20,8 @@ export default function AppRoutes() {
       <Route path="/register" element={<Register />} />
       <Route path="/blogs" element={<Blogs />} />
       <Route path="/blogs/:id" element={<BlogDetails />} />
-
+      <Route path="/blogs/:id/contributors" element={<ManageContributors />} />
+      <Route path="/verify-email" element={<VerifyEmail />} />
       <Route element={<AuthRoute />}>
         <Route path="/blogs/new" element={<CreateBlog />} />
         <Route path="/blogs/:id/edit" element={<EditBlog />} />

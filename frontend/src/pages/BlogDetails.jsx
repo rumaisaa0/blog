@@ -1,24 +1,26 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
+import { useSelector } from "react-redux";
+import { toast } from "react-toastify";
 import { getBlog, deleteBlog, createComment } from "../api";
-import { useAuth } from "../AuthContext";
 import CommentList from "../components/CommentList";
 import CommentForm from "../components/CommentForm";
-
+import EditRequestList from "../components/EditRequestList";
+import ContributorList from "../components/ContributorList";
+import { useTranslation } from "react-i18next";
 export default function BlogDetails() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { user } = useAuth();
-
+  const user = useSelector((state) => state.auth?.user ?? null);
+  const { t } = useTranslation();
   const [blog, setBlog] = useState(null);
-  const [error, setError] = useState("");
 
   async function fetchBlog() {
     try {
       const response = await getBlog(id);
-      setBlog(response.data);
+      setBlog(response.data.blog);
     } catch (err) {
-      setError("Unable to load blog.");
+      toast.error(err.response?.data?.error || "Unable to load blog");
     }
   }
 
@@ -28,13 +30,11 @@ export default function BlogDetails() {
 
   const handleComment = async (content) => {
     try {
-      await createComment(id, content);
+      const response = await createComment(id, content);
+      toast.success(response.data.message);
       fetchBlog();
     } catch (err) {
-      setError(
-        err.response?.data?.error ||
-          "Unable to create comment."
-      );
+      toast.error(err.response?.data?.error || "Unable to create comment.");
     }
   };
 
@@ -44,20 +44,16 @@ export default function BlogDetails() {
     }
 
     try {
-      await deleteBlog(id);
+      const response = await deleteBlog(id);
+      toast.success(response.data.message);
       navigate("/blogs");
     } catch (err) {
-      setError(
-        err.response?.data?.error ||
-          "You are not authorized to delete this blog."
-      );
+      toast.error(err.response?.data?.error || "Unable to delete blog.");
     }
   };
-
-  if (error) {
-    return <p>{error}</p>;
-  }
-
+  const add_contr = async()=>{
+        
+  };
   if (!blog) {
     return <p>Loading...</p>;
   }
@@ -67,29 +63,55 @@ export default function BlogDetails() {
     canManage = true;
   }
 
+
+  const isContributor =
+  user &&
+  blog.contributors?.some(
+    (contributor) => contributor.id === user.id
+  );
+
   return (
-    <div>
+    <div className="blog-details">
       <h1>{blog.title}</h1>
-
+      {blog.image_url && ( <img src={blog.image_url} alt={blog.title} className="blog_pic" /> )}
       <p>{blog.content}</p>
-
-      <p>Category: {blog.category?.name}</p>
-
-      <p>Author: {blog.user?.username}</p>
+      <p>{t("blogs.category")}: {blog.category?.name}</p>
+      <p>{t("blogs.author")}: {blog.user?.username}</p>
 
       {canManage && (
-        <>
-          <Link to={`/blogs/${id}/edit`}>Edit</Link>{" "}
-          <button onClick={handleDelete}>Delete</button>
-        </>
+        <div>
+        <div className="actions">
+          <Link className="link-btn" to={`/blogs/${id}/edit`}>
+            {t("common.edit")}
+          </Link>{" "}
+          <button onClick={handleDelete} className="red-btn">
+            {t("common.delete")}
+          </button>
+          
+        </div>
+        <EditRequestList blogId={id} />
+        <div>
+            <h2>Contributors</h2>
+            <ContributorList contr={blog.contributors}/>
+             <Link className="link-btn"
+          to={`/blogs/${id}/contributors`}> Manage Contributors </Link>
+            </div>
+            </div>
+      )}
+      {isContributor && (
+        <div className="actions">
+          <Link className="link-btn" to={`/blogs/${id}/edit`}>
+            {"suggest edit"}
+          </Link>{" "}
+          
+        </div>
+    
       )}
 
       <hr />
 
-      <h2>Comments</h2>
-
+      <h2>{t("comments.comments")}</h2>
       <CommentList comments={blog.comments} />
-
       {user && <CommentForm onSubmit={handleComment} />}
     </div>
   );

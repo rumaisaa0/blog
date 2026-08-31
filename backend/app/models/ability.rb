@@ -4,7 +4,7 @@ class Ability
   include CanCan::Ability
 
   def initialize(user)
-    user ||= User.new  # guest / not logged in
+    user ||= User.new  # guest
 
     if user.persisted? && user.role == "admin"
       can :manage, :all
@@ -17,8 +17,12 @@ class Ability
       can :destroy, Blog, user_id: user.id
       can :create, Comment
       can :read, Comment
-      can :read, User, id: user.id
+      can :read, User
       can :update, User, id: user.id
+      can :manage, BlogContributor, blog: { user_id: user.id }
+      can :create, BlogEditRequest, contributor_id: user.id
+      can :manage, BlogEditRequest, blog: { user_id: user.id }
+      
 
     else
       # guest — not logged in

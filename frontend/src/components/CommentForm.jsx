@@ -1,8 +1,8 @@
 import { useState } from "react";
-
+import { useTranslation } from "react-i18next";
 export default function CommentForm({ onSubmit }) {
   const [content, setContent] = useState("");
-
+  const { t } = useTranslation();
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -17,20 +17,15 @@ export default function CommentForm({ onSubmit }) {
 
   return (
     <form onSubmit={handleSubmit}>
-      <h3>Add Comment</h3>
+      <h3>{t("comments.add")}</h3>
 
-      <textarea
-        value={content}
+      <textarea value={content}
         onChange={(e) => setContent(e.target.value)}
-        placeholder="Write a comment..."
-        required
-      />
+        placeholder="Write a comment..."  required />
 
       <br />
 
-      <button type="submit">
-        Add Comment
-      </button>
+      <button type="submit"> {t("comments.add")} </button>
     </form>
   );
 }

@@ -1,4 +1,5 @@
 class UsersController < ApplicationController
+  respond_to :json
   before_action :authenticate_user!
   load_and_authorize_resource only: [:index, :show, :update, :destroy]
 
@@ -12,20 +13,18 @@ class UsersController < ApplicationController
     authorize! :update, current_user
 
     if current_user.update(user_params)
-      render json: current_user
+      render json: {user: current_user, message: 'Profile updated successfully!'}, status: :ok
     else
-      render json: {
-        errors: current_user.errors.full_messages
-      }, status: :unprocessable_entity
+      render json: {errors: current_user.errors.full_messages }, status: :unprocessable_entity
     end
   end
 
   def index
-    render json: @users
+    render json: {users: @users}
   end
 
   def show
-    render json: @user
+    render json: {users: @user}
   end
 
   def update

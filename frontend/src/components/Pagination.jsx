@@ -22,13 +22,11 @@ export default function Pagination({ pagination }) {
   }
 
   return (
-    <div>
+    <div className="pagination">
       <button
         disabled={current_page === 1}
-        onClick={() => goToPage(current_page - 1)}
-      >
-        Previous
-      </button>
+        onClick={() => goToPage(current_page - 1)} >
+        Previous </button>
 
       <span>
         {" "}
@@ -37,9 +35,7 @@ export default function Pagination({ pagination }) {
 
       <button
         disabled={current_page === total_pages}
-        onClick={() => goToPage(current_page + 1)}
-      >
-        Next
+        onClick={() => goToPage(current_page + 1)} > Next
       </button>
     </div>
   );

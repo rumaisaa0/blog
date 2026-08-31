@@ -11,15 +11,13 @@ class Users::SessionsController < Devise::SessionsController
   # POST /resource/sign_in
   def create
      super do |temp|
-       render json: { user: temp, message: 'login successful'} , status: :ok and return
+       render json: { user: temp, message: 'Login successful!'} , status: :ok and return
      end
   end
 
   # DELETE /resource/sign_out
   def destroy
-     super do
-       render json: { message: 'logout successful'}, status: :ok and return
-     end
+     super 
   end
 
   # protected
@@ -29,12 +27,10 @@ class Users::SessionsController < Devise::SessionsController
   #   devise_parameter_sanitizer.permit(:sign_in, keys: [:attribute])
   # end
   private
-
   def respond_to_on_destroy
-    if current_user
-      head :ok
-    else
-      head :unauthorized
-    end
+    render json: {
+      message: "Logout successful!"
+    }, status: :ok
   end
+
 end

@@ -1,13 +1,12 @@
 import { Link } from "react-router-dom";
-import { useAuth } from "../AuthContext";
-
+import { useSelector } from "react-redux";
+import { useTranslation } from "react-i18next";
 export default function Home() {
-  const { user } = useAuth();
-
+  const user = useSelector((state) => state.auth?.user ?? null);
+  const { t } = useTranslation();
   return (
     <div>
       <h1>Blog App</h1>
-
       <p>Welcome to the Blog App.</p>
 
       <Link to="/blogs">View Blogs</Link>
@@ -15,9 +14,9 @@ export default function Home() {
       {!user && (
         <>
           {" | "}
-          <Link to="/login">Login</Link>
+          <Link to="/login">{t("common.login")}</Link>
           {" | "}
-          <Link to="/register">Register</Link>
+          <Link to="/register">{t("common.register")}</Link>
         </>
       )}
     </div>
