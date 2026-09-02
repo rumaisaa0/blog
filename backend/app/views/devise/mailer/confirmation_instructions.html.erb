@@ -1,0 +1,9 @@
+<p>Welcome <%= @resource.email %>!</p>
+
+<p>
+  Please verify your email address by clicking the link below:
+</p>
+
+<p>
+  <%= link_to "Verify my email", @frontend_confirmation_url %>
+</p>

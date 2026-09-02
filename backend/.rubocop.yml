@@ -1,0 +1,33 @@
+inherit_from: .rubocop_todo.yml
+
+AllCops:
+  TargetRubyVersion: 3.1
+  NewCops: disable
+  SuggestExtensions: false
+  Exclude:
+    - 'bin/**/*'
+    - 'db/schema.rb'
+    - 'db/migrate/**/*'
+    - 'config/initializers/**/*'
+    - 'config/environments/**/*'
+
+Style/Documentation:
+  Enabled: false
+
+Metrics/MethodLength:
+  Max: 20
+
+Metrics/AbcSize:
+  Max: 25
+
+Metrics/BlockLength:
+  Max: 30
+
+Metrics/CyclomaticComplexity:
+  Max: 10
+
+Metrics/PerceivedComplexity:
+  Max: 10
+
+Layout/LineLength:
+  Max: 120
