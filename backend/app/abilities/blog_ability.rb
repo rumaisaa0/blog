@@ -1,3 +1,8 @@
+# frozen_string_literal: true
+
+# imported in ability.rb
+#
+#
 module BlogAbility
   def blog_permissions(user)
     can :read, Blog

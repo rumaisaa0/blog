@@ -1,3 +1,7 @@
+# frozen_string_literal: true
+
+# imported in ability.rb
+#
 module CommentAbility
   def comment_permissions(user)
     can :create, Comment, organization_id: user.organization_id

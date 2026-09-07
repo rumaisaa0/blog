@@ -46,12 +46,10 @@ class Blog < ApplicationRecord
 
     filters << { term: { organization_id: organization_id } } if organization_id.present?
     __elasticsearch__.search(
-      query: {
-        bool: {
-          must: { multi_match: { query: query, fields: %w[title content], fuzziness: 'AUTO' } },
-          filter: filters
-        }
-      },
+      query: { bool: {
+        must: { multi_match: { query: query, fields: %w[title content], fuzziness: 'AUTO' } },
+        filter: filters
+      } },
       from: from, size: per_page
     )
   end

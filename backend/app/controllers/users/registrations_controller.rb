@@ -2,6 +2,7 @@
 
 require 'securerandom'
 module Users
+  # devise controller for reggistration/signup
   class RegistrationsController < Devise::RegistrationsController
     respond_to :json
     before_action :configure_sign_up_params, only: [:create]
@@ -16,13 +17,11 @@ module Users
     def create
       resource = build_resource(sign_up_params)
       organization = find_or_create_organization
-      if organization.nil?
-        return render json: { errors: ['Please select or create an organization'] }, status: :unprocessable_entity
-      end
+      return organization_missing if organization.nil?
 
       resource.organization = organization
       if resource.save
-        render json: { user: resource, message: 'Registration successful. Please check your email to confirm your account.', organization: { id: organization.id, name: organization.name, subdomain: organization.subdomain } },
+        render json: success_response(resource, organization),
                status: :created
       else
         render json: { errors: resource.errors.full_messages }, status: :unprocessable_entity
@@ -95,6 +94,17 @@ module Users
         subdomain = "#{name.parameterize}-#{SecureRandom.hex(2)}" while Organization.exists?(subdomain: subdomain)
         Organization.create(name: name, subdomain: subdomain)
       end
+    end
+
+    def success_response(resource, organization)
+      { user: resource,
+        message: 'Registration successful. Please check your email to confirm your account.',
+        organization: { id: organization.id, name: organization.name,
+                        subdomain: organization.subdomain } }
+    end
+
+    def organization_missing
+      render json: { errors: ['Please select or create an organization'] }, status: :unprocessable_entity
     end
   end
 end

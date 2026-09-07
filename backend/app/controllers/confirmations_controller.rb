@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 module Users
+  # email confirmation controller
   class ConfirmationsController < Devise::ConfirmationsController
     respond_to :json
 

@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+# used for edit approvals
 class BlogEditRequestsController < ApplicationController
   respond_to :json
 
@@ -10,16 +11,13 @@ class BlogEditRequestsController < ApplicationController
 
     authorize! :read, blog
 
-    edit_requests = blog.blog_edit_requests
-                        .where(status: 'pending')
+    edit_requests = blog.blog_edit_requests.where(status: 'pending')
                         .includes(:requestor, :category)
 
-    render json: {
-      edit_requests: edit_requests.as_json(
-        include: { requestor: { only: %i[id username] },
-                   category: { only: %i[id name] } }
-      )
-    }
+    render json: { edit_requests: edit_requests.as_json(
+      include: { requestor: { only: %i[id username] },
+                 category: { only: %i[id name] } }
+    ) }
   end
 
   def show; end
@@ -31,14 +29,7 @@ class BlogEditRequestsController < ApplicationController
       return render json: { error: 'You are not a contributor of this blog' }, status: :forbidden
     end
 
-    edit_request = @blog.blog_edit_requests.create(
-      requestor_id: current_user.id,
-      title: params[:blog][:title],
-      content: params[:blog][:content],
-      category_id: params[:blog][:category_id],
-      status: 'pending'
-    )
-
+    edit_request = create_edit_request_helper
     if edit_request.persisted?
       render json: { edit_request: edit_request, message: 'Edit request submitted for approval' }, status: :created
     else
@@ -78,5 +69,15 @@ class BlogEditRequestsController < ApplicationController
 
   def set_edit_request
     @edit_request = @blog.blog_edit_requests.find(params[:id])
+  end
+
+  def create_edit_request_helper
+    @blog.blog_edit_requests.create(
+      requestor_id: current_user.id,
+      title: params[:blog][:title],
+      content: params[:blog][:content],
+      category_id: params[:blog][:category_id],
+      status: 'pending'
+    )
   end
 end

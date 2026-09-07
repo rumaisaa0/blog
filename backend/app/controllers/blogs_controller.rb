@@ -10,40 +10,10 @@ class BlogsController < ApplicationController
     page = 1 if page <= 0
     per_page = 10
     organization_id = ActsAsTenant.current_tenant&.id
-    if params[:search].present?
-      search_results = Blog.search(params[:search].strip,
-                                   organization_id: organization_id, page: page, per_page: per_page)
+    blogs, total_entries = search(params[:search], organization_id, page, per_page)
+    # total_pages = (total_entries.to_f / per_page).ceil
 
-      blogs = search_results.records.includes(:user, :category)
-
-      total_entries = search_results.results.total
-    else
-      blogs = Blog.includes(:user, :category)
-
-      blogs = blogs.unscoped if organization_id.nil?
-
-      total_entries = blogs.count
-      blogs = blogs.paginate(page: page, per_page: per_page)
-    end
-    total_pages = (total_entries.to_f / per_page).ceil
-
-    render json: {
-      blogs: blogs.as_json(
-        include: {
-          user: {
-            only: %i[id username]
-          },
-          category: {
-            only: %i[id name]
-          }
-        }
-      ),
-      pagination: {
-        current_page: page,
-        total_pages: total_pages,
-        total_entries: total_entries
-      }
-    }
+    render json: blogs_response(blogs, total_entries)
   end
 
   def show
@@ -84,5 +54,39 @@ class BlogsController < ApplicationController
 
   def blog_params
     params.require(:blog).permit(:title, :content, :category_id, :image)
+  end
+
+  def search(query, organization_id, page, per_page)
+    if query.present?
+      blogs, total_entries = query_search(query, organization_id, page, per_page)
+    else
+      blogs = Blog.includes(:user, :category)
+
+      blogs = blogs.unscoped if organization_id.nil?
+
+      total_entries = blogs.count
+      blogs = blogs.paginate(page: page, per_page: per_page)
+    end
+    [blogs, total_entries]
+  end
+
+  def blogs_response(blogs, total_entries)
+    { blogs: blogs.as_json(
+      include: { user: { only: %i[id username] },
+                 category: { only: %i[id name] } }
+    ),
+      pagination: { current_page: current_page,
+                    total_pages: (total_entries.to_f / per_page).ceil,
+                    total_entries: total_entries } }
+  end
+
+  def query_search(query, organization_id, page, per_page)
+    search_results = Blog.search(query.strip,
+                                 organization_id: organization_id, page: page, per_page: per_page)
+
+    blogs = search_results.records.includes(:user, :category)
+
+    total_entries = search_results.results.total
+    [blogs, total_entries]
   end
 end

@@ -40,12 +40,41 @@ RSpec.describe Organization, type: :model do
     end
   end
 
-  describe 'associations' do
-    it { is_expected.to have_many(:users).dependent(:destroy) }
-    it { is_expected.to have_many(:blogs).dependent(:destroy) }
-    it { is_expected.to have_many(:categories).dependent(:destroy) }
-    it { is_expected.to have_many(:comments).dependent(:destroy) }
-    it { is_expected.to have_many(:blog_contributors).dependent(:destroy) }
-    it { is_expected.to have_many(:blog_edit_requests).dependent(:destroy) }
+ describe 'associations' do
+    it 'has many users, destroyed with organization' do
+      association = described_class.reflect_on_association(:users)
+      expect(association.macro).to eq(:has_many)
+      expect(association.options[:dependent]).to eq(:destroy)
+    end
+
+    it 'has many blogs, destroyed with organization' do
+      association = described_class.reflect_on_association(:blogs)
+      expect(association.macro).to eq(:has_many)
+      expect(association.options[:dependent]).to eq(:destroy)
+    end
+
+    it 'has many categories, destroyed with organization' do
+      association = described_class.reflect_on_association(:categories)
+      expect(association.macro).to eq(:has_many)
+      expect(association.options[:dependent]).to eq(:destroy)
+    end
+
+    it 'has many comments, destroyed with organization' do
+      association = described_class.reflect_on_association(:comments)
+      expect(association.macro).to eq(:has_many)
+      expect(association.options[:dependent]).to eq(:destroy)
+    end
+
+    it 'has many blog_contributors, destroyed with organization' do
+      association = described_class.reflect_on_association(:blog_contributors)
+      expect(association.macro).to eq(:has_many)
+      expect(association.options[:dependent]).to eq(:destroy)
+    end
+
+    it 'has many blog_edit_requests, destroyed with organization' do
+      association = described_class.reflect_on_association(:blog_edit_requests)
+      expect(association.macro).to eq(:has_many)
+      expect(association.options[:dependent]).to eq(:destroy)
+    end
   end
 end

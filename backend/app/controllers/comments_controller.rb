@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+# comment add show action controllers
 class CommentsController < ApplicationController
   load_and_authorize_resource
   def index
@@ -49,11 +50,19 @@ class CommentsController < ApplicationController
 
   def build_comment
     if params[:blog_id]
-      Blog.find(params[:blog_id]).comments
-          .build(comment_params.merge(user: current_user))
+      blog_comment
     elsif params[:category_id]
-      Category.find(params[:category_id]).comments
-              .build(comment_params.merge(user: current_user))
+      category_comment
     end
+  end
+
+  def blog_comment
+    Blog.find(params[:blog_id]).comments
+        .build(comment_params.merge(user: current_user))
+  end
+
+  def category_comment
+    Category.find(params[:category_id]).comments
+            .build(comment_params.merge(user: current_user))
   end
 end

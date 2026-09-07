@@ -3,9 +3,16 @@
 require 'rails_helper'
 
 RSpec.describe Comment, type: :model do
-  describe 'associations' do
-    it { is_expected.to belong_to(:user) }
-    it { is_expected.to belong_to(:commentable) }
+describe 'associations' do
+    it 'belongs to user' do
+      association = described_class.reflect_on_association(:user)
+      expect(association.macro).to eq(:belongs_to)
+    end
+
+    it 'belongs to commentable' do
+      association = described_class.reflect_on_association(:commentable)
+      expect(association.macro).to eq(:belongs_to)
+    end
   end
 
   describe 'validations' do

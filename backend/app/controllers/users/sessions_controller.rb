@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 module Users
+  # devise signin
   class SessionsController < Devise::SessionsController
     # before_action :configure_sign_in_params, only: [:create]
     respond_to :json
@@ -13,17 +14,12 @@ module Users
     def create
       super do |temp|
         organization = temp.organization
-        render json: {
-          user: temp,
-          organization: if organization
-                          {
-                            id: organization.id,
-                            name: organization.name,
-                            subdomain: organization.subdomain
-                          }
-                        end,
-          message: 'Login successful!'
-        }, status: :ok and return
+        render json: { user: temp,
+                       organization: if organization
+                                       { id: organization.id, name: organization.name,
+                                         subdomain: organization.subdomain }
+                                     end,
+                       message: 'Login successful!' }, status: :ok and return
       end
     end
 

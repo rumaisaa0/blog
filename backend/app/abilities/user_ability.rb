@@ -1,3 +1,7 @@
+# frozen_string_literal: true
+
+# imported in ability.rb
+#
 module UserAbility
   def user_permissions(user)
     can :read, User, organization_id: user.organization_id

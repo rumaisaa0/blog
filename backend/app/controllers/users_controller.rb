@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+# handles users updates
 class UsersController < ApplicationController
   respond_to :json
   before_action :authenticate_user!

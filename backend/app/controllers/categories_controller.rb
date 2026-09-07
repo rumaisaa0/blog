@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+# crud operations for admin
 class CategoriesController < ApplicationController
   respond_to :json
   load_and_authorize_resource

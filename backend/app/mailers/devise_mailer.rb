@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+# devise mailer uses this for user email confirmation
 class DeviseMailer < Devise::Mailer
   include Devise::Controllers::UrlHelpers
 
