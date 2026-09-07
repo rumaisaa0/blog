@@ -79,6 +79,11 @@ export const rejectEditRequest = (blogId, requestId) =>
 // Categories
 export const getCategories = () => api.get("/categories");
 export const getAdminReport = (params = {}) => api.get("/admin/reports", { params });
+export const createCategory = (data) => api.post("/categories", { category: data });
+
+export const updateCategory = (id, data) => api.patch(`/categories/${id}`, { category: data });
+
+export const deleteCategory = (id) => api.delete(`/categories/${id}`);
 
 // Contributors
 export const getUsers = () => api.get("/users");

@@ -8,6 +8,7 @@ import VerifyEmail from "../pages/VerifyEmail";
 import AuthRoute from "./AuthRoute";
 import ManageContributors from "../pages/ManageContributors";
 import AdminReport from "../pages/AdminReport";
+import AdminCategories from "../pages/AdminCategories";
 export default function AppRoutes() {
   return (
     <Routes>
@@ -18,6 +19,7 @@ export default function AppRoutes() {
       <Route path="/verify-email" element={<VerifyEmail />} />
       <Route element={<AuthRoute />}>
         <Route path="/admin/reports" element={<AdminReport />} />
+        <Route path="/admin/categories" element={<AdminCategories />}/>
         <Route path="/profile" element={<Profile />} />
       </Route>
     </Routes>

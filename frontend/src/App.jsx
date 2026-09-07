@@ -10,6 +10,7 @@ import Register from "./pages/Register";
 import CreateBlog from "./pages/CreateBlog";
 import EditBlog from "./pages/EditBlog";
 import { useModal } from "./ModalContext";
+import CategoryModal from "./pages/CategoryModal";
 
 function App() {
   const dispatch = useDispatch();
@@ -68,6 +69,13 @@ function App() {
           <EditBlog blogId={modal.blogId} onUpdated={modal.onUpdated} />
         </Modal>
       )}
+      {modal && modal.name === "categoryForm" && (
+          <Modal onClose={closeModal}>
+            <CategoryModal category={modal.category}
+              onCreated={modal.onCreated}
+              onUpdated={modal.onUpdated} />
+          </Modal>
+        )}
     </>
   );
 }

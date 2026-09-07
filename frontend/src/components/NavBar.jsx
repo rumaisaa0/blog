@@ -43,7 +43,10 @@ export default function NavBar() {
       {user ? (
         <div className="nav-actions">
           {user?.role === "admin" && (
-           <Link to="/admin/reports">Admin Reports</Link>
+            <>
+                <Link to="/admin/reports">Admin Reports</Link>
+                <Link to="/admin/categories">Categories</Link>
+            </>
           )}
           <Link to="/profile">{user.username}</Link>
           {user.role === "admin" && " (admin)"}

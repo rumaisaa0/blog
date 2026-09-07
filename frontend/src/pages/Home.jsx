@@ -6,7 +6,7 @@ import { useModal } from "../ModalContext";
 export default function Home() {
   const user = useSelector((state) => state.auth?.user ?? null);
   const { t } = useTranslation();
-  const { openModal } = useModal();
+//   const { openModal } = useModal();
 
   return (
     <div>
