@@ -12,11 +12,11 @@ class BlogEditRequestsController < ApplicationController
 
     edit_requests = blog.blog_edit_requests
                         .where(status: 'pending')
-                        .includes(:contributor, :category)
+                        .includes(:requestor, :category)
 
     render json: {
       edit_requests: edit_requests.as_json(
-        include: { contributor: { only: %i[id username] },
+        include: { requestor: { only: %i[id username] },
                    category: { only: %i[id name] } }
       )
     }
@@ -32,7 +32,7 @@ class BlogEditRequestsController < ApplicationController
     end
 
     edit_request = @blog.blog_edit_requests.create(
-      contributor_id: current_user.id,
+      requestor_id: current_user.id,
       title: params[:blog][:title],
       content: params[:blog][:content],
       category_id: params[:blog][:category_id],

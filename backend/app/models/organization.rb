@@ -16,5 +16,5 @@ class Organization < ApplicationRecord
   has_many :blog_edit_requests, dependent: :destroy
 
   validates :name, presence: true
-  validates :subdomain, presence: true, uniqueness: true
+  validates :subdomain, presence: true, uniqueness: { case_sensitive: false }
 end

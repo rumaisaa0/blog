@@ -11,6 +11,6 @@
 #  index_categories_on_user_id  (user_id)
 class Category < ApplicationRecord
   acts_as_tenant :organization
-  belongs_to :user
+
   has_many :blogs
 end

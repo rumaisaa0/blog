@@ -38,7 +38,7 @@ class Blog < ApplicationRecord
   has_one_attached :image
 
   validates :title, presence: true, length: { maximum: 255 }
-  validates :content, :category, presence: true
+  validates :content, :category, presence: true, length: { maximum: 10_000 }
 
   def self.search(query, organization_id:, page: 1, per_page: 10)
     from = (page - 1) * per_page

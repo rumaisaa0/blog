@@ -1,96 +1,160 @@
 # frozen_string_literal: true
 
-# This file should contain all the record creation needed to seed the database with its default values.
-# The data can then be loaded with the bin/rails db:seed command (or created alongside the database with db:setup).
-#
-# Examples:
-#
-#   movies = Movie.create([{ name: 'Star Wars' }, { name: 'Lord of the Rings' }])
-#   Character.create(name: 'Luke', movie: movies.first)
-# db/seeds.rb
+organization1 = Organization.create!(
+  name: 'Default',
+  subdomain: 'default'
+)
 
-# db/seeds.rb
+organization2 = Organization.create!(
+  name: 'Company-two',
+  subdomain: 'company-two'
+)
 
-# puts "Clearing old data..."
-# Comment.destroy_all
-# Blog.destroy_all
-# Category.destroy_all
-# User.destroy_all
-
-admin = User.create!(
-  email: 'admin@example.com',
+admin1 = User.create!(
+  email: 'admin@acme.com',
   password: 'password123',
   password_confirmation: 'password123',
   role: 'admin',
-  username: 'user_11',
-  organization_id: 1
+  username: 'acme_admin',
+  organization: organization1
 )
 
-users = User.create!([
-                       { email: 'sara@example.com', password: 'password123',
-                         password_confirmation: 'password123', role: 'registered',
-                         username: 'user_12' },
-                       { email: 'ali@example.com', password: 'password123',
-                         password_confirmation: 'password123', role: 'registered',
-                         username: 'user_13' },
-                       { email: 'hina@example.com', password: 'password123',
-                         password_confirmation: 'password123', role: 'registered',
-                         username: 'user_14' },
-                       { email: 'usman@example.com', password: 'password123',
-                         password_confirmation: 'password123', role: 'registered',
-                         username: 'user_15' },
-                       { email: 'zara@example.com', password: 'password123',
-                         password_confirmation: 'password123', role: 'registered',
-                         username: 'user_16' },
-                       { email: 'bilal@example.com', password: 'password123',
-                         password_confirmation: 'password123', role: 'registered',
-                         username: 'user_17' },
-                       { email: 'mariam@example.com', password: 'password123',
-                         password_confirmation: 'password123', role: 'registered',
-                         username: 'user_18' },
-                       { email: 'ahmed@example.com', password: 'password123',
-                         password_confirmation: 'password123', role: 'registered',
-                         username: 'user_19' },
-                       { email: 'fatima@example.com', password: 'password123',
-                         password_confirmation: 'password123', role: 'registered',
-                         username: 'user_20' }
-                     ])
+user1 = User.create!(
+  email: 'sara@acme.com',
+  password: 'password123',
+  password_confirmation: 'password123',
+  role: 'registered',
+  username: 'sara',
+  organization: organization1
+)
 
-tech = Category.create!(name: 'Technology', user: admin)
-travel = Category.create!(name: 'Travel', user: users[0])
-food = Category.create!(name: 'Food', user: users[1])
+admin2 = User.create!(
+  email: 'admin@globex.com',
+  password: 'password123',
+  password_confirmation: 'password123',
+  role: 'admin',
+  username: 'globex_admin',
+  organization: organization2
+)
 
-blogs = Blog.create!([
-                       { title: 'Getting started with Rails',
-                         content: 'Rails makes it easy to build APIs quickly once you get past the initial setup.',
-                         category: tech, user: admin },
-                       { title: 'A weekend trip to the mountains',
-                         content: 'We packed light and drove up early Saturday morning. The weather was perfect.',
-                         category: travel, user: users[0] },
-                       { title: 'My favorite biryani recipe',
-                         content: 'The secret is in how long you let the meat marinate before cooking it.',
-                         category: food, user: users[1] },
-                       { title: 'Why I switched to React',
-                         content: 'It took a week to get comfortable, but component reuse saved me a lot of time.',
-                         category: tech, user: users[2] },
-                       { title: 'Backpacking through the north',
-                         content: 'Signal was patchy most of the trip, which honestly made it more relaxing.',
-                         category: travel, user: users[3] },
-                       { title: 'Simple breakfast ideas',
-                         content: 'Nothing fancy here, just a few things I make on busy mornings.',
-                         category: food, user: users[4] },
-                       { title: 'Learning ActiveRecord associations',
-                         content: 'Polymorphic associations felt confusing at first but
-                         make sense once you see them in use.',
-                         category: tech, user: users[5] }
-                     ])
+user2 = User.create!(
+  email: 'ali@globex.com',
+  password: 'password123',
+  password_confirmation: 'password123',
+  role: 'registered',
+  username: 'ali',
+  organization: organization2
+)
 
-Comment.create!([
-                  { content: 'This helped me a lot, thanks for writing it up.', user: users[6], commentable: blogs[0] },
-                  { content: 'Looks like a beautiful spot, adding it to my list.', user: users[7],
-                    commentable: blogs[1] },
-                  { content: 'Tried this last night, turned out great.', user: users[8], commentable: blogs[2] },
-                  { content: 'Agreed, the learning curve is worth it.', user: admin, commentable: blogs[3] }
-                ])
+tech1 = Category.create!(
+  name: 'Technology',
+  organization: organization1
+)
 
-puts "#{User.count} users, #{Category.count} categories, #{Blog.count} blogs, #{Comment.count} comments"
+travel1 = Category.create!(
+  name: 'Travel',
+  organization: organization1
+)
+
+tech2 = Category.create!(
+  name: 'Technology',
+  organization: organization2
+)
+
+food2 = Category.create!(
+  name: 'Food',
+  organization: organization2
+)
+
+blog1 = Blog.create!(
+  title: 'Getting Started with Rails',
+  content: 'Rails makes it easy to build APIs quickly.',
+  category: tech1,
+  user: admin1,
+  organization: organization1
+)
+
+blog2 = Blog.create!(
+  title: 'Weekend Trip',
+  content: 'We visited the mountains last weekend.',
+  category: travel1,
+  user: user1,
+  organization: organization1
+)
+
+blog3 = Blog.create!(
+  title: 'Learning React',
+  content: 'React makes it easier to build reusable interfaces.',
+  category: tech2,
+  user: admin2,
+  organization: organization2
+)
+
+Blog.create!(
+  title: 'Simple Food Ideas',
+  content: 'Here are a few simple meals for busy days.',
+  category: food2,
+  user: user2,
+  organization: organization2
+)
+
+Comment.create!(
+  content: 'Great article!',
+  user: user1,
+  commentable: blog1,
+  organization: organization1
+)
+
+Comment.create!(
+  content: 'Very useful information.',
+  user: admin1,
+  commentable: blog2,
+  organization: organization1
+)
+
+Comment.create!(
+  content: 'This helped me understand React.',
+  user: user2,
+  commentable: blog3,
+  organization: organization2
+)
+
+BlogContributor.create!(
+  blog: blog1,
+  user: user1,
+  organization: organization1
+)
+
+BlogContributor.create!(
+  blog: blog3,
+  user: user2,
+  organization: organization2
+)
+
+BlogEditRequest.create!(
+  blog: blog1,
+  requestor: user1,
+  category: tech1,
+  title: 'Getting Started with Rails - Updated',
+  content: 'Updated content for the Rails article.',
+  status: 'pending',
+  organization: organization1
+)
+
+BlogEditRequest.create!(
+  blog: blog3,
+  requestor: user2,
+  category: tech2,
+  title: 'Learning React - Updated',
+  content: 'Updated content for the React article.',
+  status: 'pending',
+  organization: organization2
+)
+
+puts "#{Organization.count} organizations"
+puts "#{User.count} users"
+puts "#{Category.count} categories"
+puts "#{Blog.count} blogs"
+puts "#{Comment.count} comments"
+puts "#{BlogContributor.count} blog contributors"
+puts "#{BlogEditRequest.count} blog edit requests"

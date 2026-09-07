@@ -24,8 +24,7 @@ class User < ApplicationRecord
 
   has_many :blog_contributors, dependent: :destroy
   has_many :contributed_blogs, through: :blog_contributors, source: :blog
-  has_many :blog_edit_requests, foreign_key: :contributor_id, dependent: :destroy
-  has_many :categories, dependent: :restrict_with_error
+  has_many :blog_edit_requests, foreign_key: :requestor_id, dependent: :destroy
   has_many :blogs, dependent: :restrict_with_error
   has_many :comments, dependent: :restrict_with_error
 

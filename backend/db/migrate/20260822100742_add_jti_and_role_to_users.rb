@@ -1,9 +1,0 @@
-# frozen_string_literal: true
-
-class AddJtiAndRoleToUsers < ActiveRecord::Migration[6.1]
-  def change
-    add_column :users, :jti, :string
-    add_index :users, :jti, unique: true
-    add_column :users, :role, :string
-  end
-end

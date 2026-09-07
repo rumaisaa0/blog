@@ -21,4 +21,5 @@ class Comment < ApplicationRecord
   belongs_to :commentable, polymorphic: true
 
   validates :commentable_type, inclusion: { in: TABLES }
+  validates :content, presence: true
 end

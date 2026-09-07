@@ -12,7 +12,6 @@ class CategoriesController < ApplicationController
   end
 
   def create
-    @category.user = current_user
     if @category.save
       render json: { category: @category, message: 'Category created successfully' }, status: :created
     else
