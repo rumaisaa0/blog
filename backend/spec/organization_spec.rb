@@ -40,7 +40,7 @@ RSpec.describe Organization, type: :model do
     end
   end
 
- describe 'associations' do
+  describe 'associations' do
     it 'has many users, destroyed with organization' do
       association = described_class.reflect_on_association(:users)
       expect(association.macro).to eq(:has_many)

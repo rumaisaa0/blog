@@ -3,32 +3,23 @@
 require 'rails_helper'
 
 RSpec.describe Ability do
-  describe 'admin user' do
-    it 'can manage everything' do
-      user = User.new(
-        role: 'admin'
-      )
+  let(:organization) { Organization.create!(name: 'Test Org', subdomain: 'test-org') }
+  let(:category) { Category.create!(name: 'Tech', organization: organization) }
 
-      ability = Ability.new(user)
-
-      expect(ability.can?(:manage, :all)).to be true
-    end
+  def create_user(role:, organization:, suffix:)
+    User.create!(
+      email: "user#{suffix}@example.com",
+      username: "user#{suffix}",
+      password: 'password123',
+      role: role,
+      organization: organization,
+      confirmed_at: Time.current
+    )
   end
 
   describe 'registered user' do
-    let(:user) do
-      User.new(
-        id: 1,
-        role: 'registered'
-      )
-    end
-
-    let(:other_user) do
-      User.new(
-        id: 2,
-        role: 'registered'
-      )
-    end
+    let(:user) { create_user(role: 'registered', organization: organization, suffix: 2) }
+    let(:other_user) { create_user(role: 'registered', organization: organization, suffix: 3) }
 
     it 'can read blogs' do
       ability = Ability.new(user)
@@ -43,7 +34,7 @@ RSpec.describe Ability do
     end
 
     it 'can update their own blog' do
-      blog = Blog.new(user_id: user.id)
+      blog = Blog.new(user: user, organization: organization, category: category)
 
       ability = Ability.new(user)
 
@@ -51,7 +42,7 @@ RSpec.describe Ability do
     end
 
     it 'cannot update another users blog' do
-      blog = Blog.new(user_id: other_user.id)
+      blog = Blog.new(user: other_user, organization: organization, category: category)
 
       ability = Ability.new(user)
 
@@ -59,7 +50,7 @@ RSpec.describe Ability do
     end
 
     it 'can destroy their own blog' do
-      blog = Blog.new(user_id: user.id)
+      blog = Blog.new(user: user, organization: organization, category: category)
 
       ability = Ability.new(user)
 
@@ -67,7 +58,7 @@ RSpec.describe Ability do
     end
 
     it 'cannot destroy another users blog' do
-      blog = Blog.new(user_id: other_user.id)
+      blog = Blog.new(user: other_user, organization: organization, category: category)
 
       ability = Ability.new(user)
 

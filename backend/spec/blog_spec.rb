@@ -3,24 +3,39 @@
 require 'rails_helper'
 
 RSpec.describe Blog, type: :model do
+  let(:organization) { Organization.create!(name: 'Test Org', subdomain: 'test-org') }
+  let(:category) { Category.create!(name: 'Tech', organization: organization) }
+  let(:user) do
+    User.create!(
+      email: 'blogauthor@example.com',
+      username: 'blogauthor',
+      password: 'password123',
+      organization: organization,
+      confirmed_at: Time.current
+    )
+  end
+
   describe 'validations' do
     it 'is valid with valid attributes' do
       blog = Blog.new(
         title: 'My Blog',
-        content: 'Some blog content'
+        content: 'Some blog content',
+        user: user,
+        category: category,
+        organization: organization
       )
 
       expect(blog).to be_valid
     end
 
     it 'is invalid without a title' do
-      blog = Blog.new(content: 'Some content')
+      blog = Blog.new(content: 'Some content', user: user, category: category, organization: organization)
 
       expect(blog).not_to be_valid
     end
 
     it 'is invalid without content' do
-      blog = Blog.new(title: 'My Blog')
+      blog = Blog.new(title: 'My Blog', user: user, category: category, organization: organization)
 
       expect(blog).not_to be_valid
     end
@@ -28,7 +43,10 @@ RSpec.describe Blog, type: :model do
     it 'does not allow a title longer than 255 characters' do
       blog = Blog.new(
         title: 'a' * 256,
-        content: 'Some content'
+        content: 'Some content',
+        user: user,
+        category: category,
+        organization: organization
       )
 
       expect(blog).not_to be_valid
