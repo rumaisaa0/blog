@@ -15,14 +15,14 @@ export default function Home() {
 
       <Link to="/blogs">View Blogs</Link>
 
-      {!user && (
+      {/* {!user && (
         <>
           {" | "}
           <button onClick={() => openModal("login")}>{t("common.login")}</button>
           {" | "}
           <button onClick={() => openModal("register")}>{t("common.register")}</button>
         </>
-      )}
+      )} */}
     </div>
   );
 }

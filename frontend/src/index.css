@@ -67,6 +67,7 @@ select {
 nav {
   display: flex;
   align-items: center;
+  justify-content: space-between;
   gap: 20px;
 
   padding: 16px clamp(16px, 4vw, 48px);
@@ -74,21 +75,27 @@ nav {
   background-color: var(--primary-color);
 }
 
-nav a {
+.nav-links,
+.nav-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.nav-actions {
+  margin-left: auto;
+}
+
+nav a,
+nav span {
   color: white;
   font-weight: 500;
   text-decoration: none;
 }
 
-nav a:hover {
-  text-decoration: underline;
-}
-
-nav button {
-  margin-left: auto;
-}
-.left-btn{
-   margin-left: auto;
+.nav-login-btn,
+.nav-register-btn {
+  margin-left: 0;
 }
 
 /* ========================================

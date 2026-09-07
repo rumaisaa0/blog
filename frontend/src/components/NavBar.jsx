@@ -34,34 +34,30 @@ export default function NavBar() {
 
   return (
     <nav>
-      <Link to="/">{t("common.home")}</Link>
-      {" | "}
-      <Link to="/blogs">{t("common.blogs")}</Link>
+      <div className="nav-links">
+        <Link to="/">{t("common.home")}</Link>
+        <span>|</span>
+        <Link to="/blogs">{t("common.blogs")}</Link>
+      </div>
 
       {user ? (
-        <>
-          {" | "}
-           {user?.role === "admin" && (
-            <Link to="/admin/reports">Admin Reports</Link>)}
-           {" | "}
+        <div className="nav-actions">
+          {user?.role === "admin" && (
+           <Link to="/admin/reports">Admin Reports</Link>
+          )}
           <Link to="/profile">{user.username}</Link>
-
           {user.role === "admin" && " (admin)"}
-          {" | "}
-
           <button onClick={handleLogout}>{t("common.logout")}</button>
-        </>
+        </div>
       ) : (
-        <>
-          {" | "}
-          <button className="left-btn" onClick={() => openModal("login")}>
-            {t("common.login")}
+        <div className="nav-actions">
+          <button className="nav-login-btn" onClick={() => openModal("login")}>
+           {t("common.login")}
           </button>
-          {" | "}
-          <button onClick={() => openModal("register")}>
-            {t("common.register")}
+          <button className="nav-register-btn" onClick={() => openModal("register")}>
+           {t("common.register")}
           </button>
-        </>
+        </div>
       )}
     </nav>
   );
