@@ -8,11 +8,13 @@ import CommentForm from "../components/CommentForm";
 import EditRequestList from "../components/EditRequestList";
 import ContributorList from "../components/ContributorList";
 import { useTranslation } from "react-i18next";
+import { useModal } from "../ModalContext";
 export default function BlogDetails() {
   const { id } = useParams();
   const navigate = useNavigate();
   const user = useSelector((state) => state.auth?.user ?? null);
   const { t } = useTranslation();
+  const { openModal } = useModal();
   const [blog, setBlog] = useState(null);
 
   async function fetchBlog() {
@@ -81,13 +83,16 @@ export default function BlogDetails() {
       {canManage && (
         <div>
         <div className="actions">
-          <Link className="link-btn" to={`/blogs/${id}/edit`}>
+          <button
+            className="link-btn"
+            onClick={() => openModal("editBlog", { blogId: id, onUpdated: fetchBlog })}
+          >
             {t("common.edit")}
-          </Link>{" "}
+          </button>{" "}
           <button onClick={handleDelete} className="red-btn">
             {t("common.delete")}
           </button>
-          
+
         </div>
         <EditRequestList blogId={id} />
         <div>
@@ -100,12 +105,15 @@ export default function BlogDetails() {
       )}
       {isContributor && (
         <div className="actions">
-          <Link className="link-btn" to={`/blogs/${id}/edit`}>
+          <button
+            className="link-btn"
+            onClick={() => openModal("editBlog", { blogId: id, onUpdated: fetchBlog })}
+          >
             {"suggest edit"}
-          </Link>{" "}
-          
+          </button>{" "}
+
         </div>
-    
+
       )}
 
       <hr />

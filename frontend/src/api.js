@@ -16,9 +16,11 @@ export const storeToken = (token) => {
 
   localStorage.setItem("token", token);
 
-  const domain = window.location.hostname.endsWith(".localhost")
-    ? ".localhost"
-    : window.location.hostname;
+  const isLocalDev =
+    window.location.hostname === "localhost" ||
+    window.location.hostname.endsWith(".localhost");
+
+  const domain = isLocalDev ? ".localhost" : window.location.hostname;
 
   document.cookie = `token=${encodeURIComponent(token)}; path=/; max-age=86400; SameSite=Lax; domain=${domain}`;
   document.cookie = `token=${encodeURIComponent(token)}; path=/; max-age=86400; SameSite=Lax`;

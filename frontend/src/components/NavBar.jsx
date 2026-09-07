@@ -4,11 +4,15 @@ import { toast } from "react-toastify";
 import { signOut } from "../api";
 import { clearUser } from "../slice/Auth";
 import { useTranslation } from "react-i18next";
+import { useModal } from "../ModalContext";
+
 export default function NavBar() {
   const dispatch = useDispatch();
   const user = useSelector((state) => state.auth?.user ?? null);
   const navigate = useNavigate();
   const { t } = useTranslation();
+  const { openModal } = useModal();
+
   async function handleLogout() {
     try {
       const response = await signOut();
@@ -19,12 +23,12 @@ export default function NavBar() {
 
       localStorage.removeItem("token");
       dispatch(clearUser());
-      navigate("/login");
+      navigate("/");
     } catch (err) {
       localStorage.removeItem("token");
       dispatch(clearUser());
       toast.error(err.response?.data?.error || t("auth.logoutFail"));
-      navigate("/login");
+      navigate("/");
     }
   }
 
@@ -39,9 +43,9 @@ export default function NavBar() {
           {" | "}
            {user?.role === "admin" && (
             <Link to="/admin/reports">Admin Reports</Link>)}
-           {" | "} 
+           {" | "}
           <Link to="/profile">{user.username}</Link>
-           
+
           {user.role === "admin" && " (admin)"}
           {" | "}
 
@@ -50,9 +54,13 @@ export default function NavBar() {
       ) : (
         <>
           {" | "}
-          <Link to="/login" className="left-btn">{t("common.login")}</Link>
+          <button className="left-btn" onClick={() => openModal("login")}>
+            {t("common.login")}
+          </button>
           {" | "}
-          <Link to="/register">{t("common.register")}</Link>
+          <button onClick={() => openModal("register")}>
+            {t("common.register")}
+          </button>
         </>
       )}
     </nav>

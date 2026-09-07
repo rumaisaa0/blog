@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { createBlog, getCategories } from "../api";
 import { toast } from "react-toastify";
+import { useModal } from "../ModalContext";
 
-export default function CreateBlog() {
-  const navigate = useNavigate();
+export default function CreateBlog({ onCreated }) {
+  const { closeModal } = useModal();
 
   const [form, setForm] = useState({
     title: "",
@@ -43,10 +43,15 @@ export default function CreateBlog() {
 
       if (form.image) {
         formData.append("blog[image]", form.image);
-        }  
+        }
       const response = await createBlog(formData);
       toast.success(response.data.message);
-      navigate(`/blogs/${response.data.blog.id}`);
+
+      if (onCreated) {
+        onCreated();
+      }
+
+      closeModal();
     } catch (err) {
       toast.error(err.response?.data?.error || "Unable to create blog");
     }

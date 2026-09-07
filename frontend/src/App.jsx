@@ -4,9 +4,16 @@ import NavBar from "./components/NavBar";
 import AppRoutes from "./routes/AppRoutes";
 import { getProfile, getStoredToken } from "./api";
 import { setUser, clearUser, setLoading } from "./slice/Auth";
+import Modal from "./components/Modal";
+import Login from "./pages/Login";
+import Register from "./pages/Register";
+import CreateBlog from "./pages/CreateBlog";
+import EditBlog from "./pages/EditBlog";
+import { useModal } from "./ModalContext";
 
 function App() {
   const dispatch = useDispatch();
+  const { modal, closeModal } = useModal();
 
   useEffect(() => {
     const bootstrapAuth = async () => {
@@ -37,6 +44,30 @@ function App() {
       <main>
         <AppRoutes />
       </main>
+
+      {modal && modal.name === "login" && (
+        <Modal onClose={closeModal}>
+          <Login />
+        </Modal>
+      )}
+
+      {modal && modal.name === "register" && (
+        <Modal onClose={closeModal}>
+          <Register />
+        </Modal>
+      )}
+
+      {modal && modal.name === "createBlog" && (
+        <Modal onClose={closeModal}>
+          <CreateBlog onCreated={modal.onCreated} />
+        </Modal>
+      )}
+
+      {modal && modal.name === "editBlog" && (
+        <Modal onClose={closeModal}>
+          <EditBlog blogId={modal.blogId} onUpdated={modal.onUpdated} />
+        </Modal>
+      )}
     </>
   );
 }

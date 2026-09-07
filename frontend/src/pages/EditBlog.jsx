@@ -1,12 +1,11 @@
 import { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { toast } from "react-toastify";
-import {getBlog,updateBlog,createEditRequest,getCategories,} from "../api";
+import { getBlog, updateBlog, createEditRequest, getCategories } from "../api";
+import { useModal } from "../ModalContext";
 
-export default function EditBlog() {
-  const { id } = useParams();
-  const navigate = useNavigate();
+export default function EditBlog({ blogId, onUpdated }) {
+  const { closeModal } = useModal();
 
   const user = useSelector((state) => state.auth?.user ?? null);
 
@@ -32,7 +31,7 @@ export default function EditBlog() {
 
     async function loadData() {
       try {
-        const blogResponse = await getBlog(id);
+        const blogResponse = await getBlog(blogId);
         const categoriesResponse = await getCategories();
 
         const blogData = blogResponse.data.blog;
@@ -74,7 +73,7 @@ export default function EditBlog() {
     }
 
     loadData();
-  }, [id, user]);
+  }, [blogId, user]);
 
   const handleChange = (e) => {
     setForm((prev) => ({
@@ -93,18 +92,28 @@ export default function EditBlog() {
       };
 
       if (isAuthor) {
-        const response = await updateBlog(id, data);
+        const response = await updateBlog(blogId, data);
 
         toast.success(response.data.message);
-        navigate(`/blogs/${id}`);
+
+        if (onUpdated) {
+          onUpdated();
+        }
+
+        closeModal();
         return;
       }
 
       if (isContributor) {
-        const response = await createEditRequest(id, data);
+        const response = await createEditRequest(blogId, data);
 
         toast.success(response.data.message);
-        navigate(`/blogs/${id}`);
+
+        if (onUpdated) {
+          onUpdated();
+        }
+
+        closeModal();
         return;
       }
 
@@ -191,4 +200,3 @@ export default function EditBlog() {
     </div>
   );
 }
-

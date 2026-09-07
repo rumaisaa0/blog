@@ -5,9 +5,11 @@ import { useSelector } from "react-redux";
 import BlogCard from "../components/BlogCard";
 import Pagination from "../components/Pagination";
 import { toast } from "react-toastify";
+import { useModal } from "../ModalContext";
 export default function Blogs() {
-  
+
   const user = useSelector((state) => state.auth.user);
+  const { openModal } = useModal();
   const [blogs, setBlogs] = useState([]);
   const [pagination, setPagination] = useState(null);
   const [search, setSearch] = useState("");
@@ -79,7 +81,14 @@ export default function Blogs() {
 
       <br />
 
-      {user && <Link className= "link-btn" to="/blogs/new">Create Blog</Link>}
+      {user && (
+        <button
+          className="link-btn"
+          onClick={() => openModal("createBlog", { onCreated: fetchBlogs })}
+        >
+          Create Blog
+        </button>
+      )}
 
       <hr />
       <table>

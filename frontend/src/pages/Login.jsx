@@ -1,14 +1,16 @@
 import { useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { signIn, storeToken } from "../api";
 import { setUser } from "../slice/Auth";
 import { toast } from "react-toastify";
 import { useTranslation } from "react-i18next";
+import { useModal } from "../ModalContext";
 export default function Login() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { t } = useTranslation();
+  const { closeModal, openModal } = useModal();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
@@ -51,6 +53,7 @@ export default function Login() {
       storeToken(token);
       dispatch(setUser(response.data.user));
       toast.success(response.data.message);
+      closeModal();
 
       const redirected = redirectToOrganization(response.data.organization);
       if (!redirected) {
@@ -90,7 +93,10 @@ export default function Login() {
       </form>
 
       <p>
-        {t("auth.noAccount")}<Link to="/register">{t("common.register")}</Link>
+        {t("auth.noAccount")}
+        <button className="link-btn" onClick={() => openModal("register")}>
+          {t("common.register")}
+        </button>
       </p>
     </div>
   );
