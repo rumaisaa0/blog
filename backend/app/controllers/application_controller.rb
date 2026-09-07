@@ -18,7 +18,7 @@ class ApplicationController < ActionController::API
   private
 
   def set_current_tenant
-    return if request.path == '/organizations' || request.path == '/users'
+    return if ['/organizations', '/users'].include?(request.path)
 
     subdomain = request.subdomain.presence
 

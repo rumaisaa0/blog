@@ -14,10 +14,9 @@
 #  index_blogs_on_user_id      (user_id)
 class Blog < ApplicationRecord
   acts_as_tenant :organization
-  
+
   include Elasticsearch::Model
   include Elasticsearch::Model::Callbacks
-
 
   settings index: {
     number_of_shards: 1,
@@ -30,7 +29,6 @@ class Blog < ApplicationRecord
     end
   end
 
-
   belongs_to :user
   belongs_to :category
   has_many :blog_contributors, dependent: :destroy
@@ -42,20 +40,19 @@ class Blog < ApplicationRecord
   validates :title, presence: true, length: { maximum: 255 }
   validates :content, :category, presence: true
 
-
   def self.search(query, organization_id:, page: 1, per_page: 10)
-  from = (page - 1) * per_page
-  filters = []
+    from = (page - 1) * per_page
+    filters = []
 
-  if organization_id.present?
-    filters << { term: {  organization_id: organization_id }  }
-  end
-  __elasticsearch__.search(
-    query: {
-      bool: {
-        must: {multi_match: { query: query, fields: %w[title content], fuzziness: 'AUTO' }},
-        filter: filters}
-    },
-    from: from, size: per_page)
+    filters << { term: { organization_id: organization_id } } if organization_id.present?
+    __elasticsearch__.search(
+      query: {
+        bool: {
+          must: { multi_match: { query: query, fields: %w[title content], fuzziness: 'AUTO' } },
+          filter: filters
+        }
+      },
+      from: from, size: per_page
+    )
   end
 end

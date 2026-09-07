@@ -33,7 +33,6 @@ class User < ApplicationRecord
   validates :email, presence: true, uniqueness: { scope: :organization_id }
   validates :role, presence: true, inclusion: { in: ROLES }
 
-
   def as_json(options = {})
     super(options.merge(only: %i[id email username role]))
   end

@@ -3,10 +3,9 @@
 class Ability
   include CanCan::Ability
 
-
   include UserAbility
   include CategoryAbility
-  include CommentAbility 
+  include CommentAbility
   include BlogEditRequestAbility
   include BlogContributorAbility
   include BlogAbility
@@ -22,14 +21,13 @@ class Ability
 
     elsif user.guest?
       # guest — not logged in
-       guest_permissions
+      guest_permissions
     end
   end
 
   private
 
   def registered_permissions(user)
-
     blog_contributor_permissions(user)
     blog_edit_request_permissions(user)
     blog_permissions(user)
@@ -38,12 +36,13 @@ class Ability
     category_permissions(user)
   end
 
-  def guest_permissions 
-    can :read, Category 
+  def guest_permissions
+    can :read, Category
     can :read, Blog
     can :read, Comment
   end
-  def admin_permissions (user)
-    can :manage, :all , organization_id: user.organization_id
+
+  def admin_permissions(user)
+    can :manage, :all, organization_id: user.organization_id
   end
 end

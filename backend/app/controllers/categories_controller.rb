@@ -14,7 +14,7 @@ class CategoriesController < ApplicationController
   def create
     @category.user = current_user
     if @category.save
-      render json: { category: @category,  message: 'Category created successfully' }, status: :created
+      render json: { category: @category, message: 'Category created successfully' }, status: :created
     else
       render json: { errors: @category.errors.full_messages }, status: :unprocessable_entity
     end
@@ -22,7 +22,7 @@ class CategoriesController < ApplicationController
 
   def update
     if @category.update(category_params)
-      render json: { category: @category, message: 'Category updated successfully'  }, status: :ok
+      render json: { category: @category, message: 'Category updated successfully' }, status: :ok
     else
       render json: { errors: @category.errors.full_messages }, status: :unprocessable_entity
     end

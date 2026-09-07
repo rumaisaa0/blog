@@ -12,7 +12,7 @@ class BlogsController < ApplicationController
     organization_id = ActsAsTenant.current_tenant&.id
     if params[:search].present?
       search_results = Blog.search(params[:search].strip,
-        organization_id: organization_id, page: page, per_page: per_page )
+                                   organization_id: organization_id, page: page, per_page: per_page)
 
       blogs = search_results.records.includes(:user, :category)
 
@@ -29,15 +29,15 @@ class BlogsController < ApplicationController
 
     render json: {
       blogs: blogs.as_json(
-      include: {
-        user: {
-          only: %i[id username]
-        },
-        category: {
-          only: %i[id name]
+        include: {
+          user: {
+            only: %i[id username]
+          },
+          category: {
+            only: %i[id name]
+          }
         }
-      }
-    ),
+      ),
       pagination: {
         current_page: page,
         total_pages: total_pages,
@@ -45,8 +45,6 @@ class BlogsController < ApplicationController
       }
     }
   end
-  
-
 
   def show
     # render json: @blog.as_json(include: [:comments, :category, :user])

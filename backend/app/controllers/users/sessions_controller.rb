@@ -15,11 +15,13 @@ module Users
         organization = temp.organization
         render json: {
           user: temp,
-          organization: organization ? {
-            id: organization.id,
-            name: organization.name,
-            subdomain: organization.subdomain
-          } : nil,
+          organization: if organization
+                          {
+                            id: organization.id,
+                            name: organization.name,
+                            subdomain: organization.subdomain
+                          }
+                        end,
           message: 'Login successful!'
         }, status: :ok and return
       end

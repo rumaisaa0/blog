@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-
 class BlogEditRequestsController < ApplicationController
   respond_to :json
 
