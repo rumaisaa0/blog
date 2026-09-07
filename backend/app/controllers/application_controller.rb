@@ -18,15 +18,19 @@ class ApplicationController < ActionController::API
   private
 
   def set_current_tenant
-    if request.subdomain == 'www'
-      ActsAsTenant.current_tenant = nil
+    return if request.path == '/organizations' || request.path == '/users'
+
+    subdomain = request.subdomain.presence
+
+    if subdomain.present? && subdomain != 'www'
+      organization = Organization.find_by(subdomain: subdomain)
+      ActsAsTenant.current_tenant = organization
       return
     end
 
-    organization = Organization.find_by(subdomain: request.subdomain)
-
-    raise ActiveRecord::RecordNotFound, 'Organization not found' unless organization
-
-    ActsAsTenant.current_tenant = organization
+    # Do not force the default tenant on login / localhost requests. Without a real
+    # tenant subdomain, we should leave the tenant unset so login can validate across
+    # organizations and the frontend can redirect to the correct org URL afterwards.
+    ActsAsTenant.current_tenant = nil
   end
 end

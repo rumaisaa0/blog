@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useDispatch } from "react-redux";
-import { signIn } from "../api";
+import { signIn, storeToken } from "../api";
 import { setUser } from "../slice/Auth";
 import { toast } from "react-toastify";
 import { useTranslation } from "react-i18next";
@@ -11,6 +11,27 @@ export default function Login() {
   const { t } = useTranslation();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+
+  const redirectToOrganization = (organization) => {
+    if (!organization?.subdomain) {
+      return false;
+    }
+
+    const currentHost = window.location.hostname;
+    const currentPort = window.location.port ? `:${window.location.port}` : "";
+    const targetHost = currentHost === organization.subdomain || currentHost === `${organization.subdomain}.localhost`
+      ? currentHost
+      : `${organization.subdomain}.localhost`;
+
+    const targetUrl = `${window.location.protocol}//${targetHost}${currentPort}/blogs`;
+
+    if (window.location.href.startsWith(targetUrl)) {
+      return true;
+    }
+
+    window.location.href = targetUrl;
+    return true;
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -27,10 +48,14 @@ export default function Login() {
         return;
       }
 
-      localStorage.setItem("token", token);
+      storeToken(token);
       dispatch(setUser(response.data.user));
       toast.success(response.data.message);
-      navigate("/blogs");
+
+      const redirected = redirectToOrganization(response.data.organization);
+      if (!redirected) {
+        navigate("/blogs");
+      }
     } catch (err) {
       toast.error(err.response?.data?.error || t("auth.loginFailed"));
     }

@@ -3,7 +3,7 @@ require 'securerandom'
 module Users
   class RegistrationsController < Devise::RegistrationsController
     respond_to :json
-    # before_action :configure_sign_up_params, only: [:create]
+    before_action :configure_sign_up_params, only: [:create]
     # before_action :configure_account_update_params, only: [:update]
 
     # GET /resource/sign_up
@@ -70,27 +70,31 @@ module Users
     # def after_inactive_sign_up_path_for(resource)
     #   super(resource)
     # end
-  protected 
-  def configure_sign_up_params 
-    
-   devise_parameter_sanitizer.permit( :sign_up, keys: %i[username email password password_confirmation organization_id] ) 
-  end 
-  private 
-  def find_or_create_organization 
-    
-    organization_id = params.dig(:user, :organization_id) 
-    organization_name = params.dig(:organization, :name) 
-    if organization_id.present? 
-      
-      endOrganization.find_by(id: organization_id) 
-    elsif organization_name.present? 
-      name = organization_name.strip 
-      subdomain = name.parameterize 
+  protected
+
+  def configure_sign_up_params
+    devise_parameter_sanitizer.permit(
+      :sign_up,
+      keys: %i[username email password password_confirmation organization_id]
+    )
+  end
+
+  private
+
+  def find_or_create_organization
+    organization_id = params.dig(:user, :organization_id)
+    organization_name = params.dig(:user, :organization, :name)
+
+    if organization_id.present?
+      Organization.find_by(id: organization_id)
+    elsif organization_name.present?
+      name = organization_name.strip
+      subdomain = name.parameterize
       while Organization.exists?(subdomain: subdomain)
-       subdomain = "#{name.parameterize}-#{SecureRandom.hex(2)}"
+        subdomain = "#{name.parameterize}-#{SecureRandom.hex(2)}"
       end
-      Organization.create( name: name, subdomain: subdomain ) 
-    end 
+      Organization.create(name: name, subdomain: subdomain)
+    end
   end
   end
 end

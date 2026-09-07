@@ -1,7 +1,7 @@
 import { useState,useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useDispatch } from "react-redux";
-import { signUp,getOrganizations } from "../api";
+import { signUp, getOrganizations, storeToken } from "../api";
 import { setUser } from "../slice/Auth";
 import { toast } from "react-toastify";
 import { useTranslation } from "react-i18next";
@@ -17,19 +17,56 @@ export default function Register() {
     organization_id: "",
   organization_name: "",
   });
-  const [organizationType, setOrganizationType] = useState("existing"); 
+  const [organizationType, setOrganizationType] = useState("existing");
   const [organizations, setOrganizations] = useState([]);
-  useEffect(() => {
-  const fetchOrganizations = async () => {
-    try {
-      const response = await getOrganizations();
-      setOrganizations(response.data);
-    } catch (error) {
-      toast.error("Failed to load organizations");
+
+  const redirectToOrganization = (organization) => {
+    if (!organization?.subdomain) {
+      return false;
     }
+
+    const currentHost = window.location.hostname;
+    const currentPort = window.location.port ? `:${window.location.port}` : "";
+    const targetHost = currentHost === organization.subdomain || currentHost === `${organization.subdomain}.localhost`
+      ? currentHost
+      : `${organization.subdomain}.localhost`;
+
+    const targetUrl = `${window.location.protocol}//${targetHost}${currentPort}/blogs`;
+
+    if (window.location.href.startsWith(targetUrl)) {
+      return true;
+    }
+
+    window.location.href = targetUrl;
+    return true;
   };
 
-  fetchOrganizations();
+  useEffect(() => {
+    const fetchOrganizations = async () => {
+      try {
+        const response = await getOrganizations();
+        const payload = response?.data;
+        const orgList = Array.isArray(payload)
+          ? payload
+          : Array.isArray(payload?.organizations)
+            ? payload.organizations
+            : Array.isArray(payload?.data)
+              ? payload.data
+              : [];
+
+        setOrganizations(orgList);
+
+        if (orgList.length === 0 && organizationType === "existing") {
+          setOrganizationType("new");
+        }
+      } catch (error) {
+        setOrganizations([]);
+        setOrganizationType("new");
+        toast.error("Failed to load organizations. You can create a new one instead.");
+      }
+    };
+
+    fetchOrganizations();
   }, []);
   const handleChange = (e) => {
     setForm((prev) => ({
@@ -49,11 +86,18 @@ export default function Register() {
     try {
       const response = await signUp(data);
 
-      localStorage.setItem("token", response.data.token);
-      dispatch(setUser(response.data.user));
+      const token = response.data.token || (response.headers?.authorization ? response.headers.authorization.replace("Bearer ", "") : null);
+      if (token) {
+        storeToken(token);
+      }
 
+      dispatch(setUser(response.data.user));
       toast.success(response.data.message);
-      navigate("/blogs");
+
+      const redirected = redirectToOrganization(response.data.organization);
+      if (!redirected) {
+        navigate("/blogs");
+      }
     } catch (err) {
       const errors = err.response?.data?.errors;
       toast.error(Array.isArray(errors) ? errors.join(", ") : t("auth.registrationFailed"));

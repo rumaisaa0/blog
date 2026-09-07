@@ -9,8 +9,10 @@
 
 Rails.application.config.middleware.insert_before 0, Rack::Cors do
   allow do
-    origins 'localhost:5173', 'http://localhost:5173', 'http://company1.localhost:5173',
-            'http://company-two.localhost:5173', 'http://company3.localhost:5173', 'http://company4.localhost:5173', 'http://company5.localhost:5173', 'http://default.localhost:5173'
+    origins 'localhost:5173', 'http://localhost:5173', 'http://www.localhost:5173',
+            'http://company1.localhost:5173', 'http://company-two.localhost:5173',
+            'http://company3.localhost:5173', 'http://company4.localhost:5173',
+            'http://company5.localhost:5173', 'http://default.localhost:5173'
 
     resource '*',
              headers: :any,

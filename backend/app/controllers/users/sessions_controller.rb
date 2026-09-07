@@ -12,7 +12,16 @@ module Users
     # POST /resource/sign_in
     def create
       super do |temp|
-        render json: { user: temp, message: 'Login successful!' }, status: :ok and return
+        organization = temp.organization
+        render json: {
+          user: temp,
+          organization: organization ? {
+            id: organization.id,
+            name: organization.name,
+            subdomain: organization.subdomain
+          } : nil,
+          message: 'Login successful!'
+        }, status: :ok and return
       end
     end
 
