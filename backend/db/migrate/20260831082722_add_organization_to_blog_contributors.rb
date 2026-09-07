@@ -2,6 +2,6 @@
 
 class AddOrganizationToBlogContributors < ActiveRecord::Migration[6.1]
   def change
-    add_reference :blog_contributors, :organization, null: false, foreign_key: true, default: 1
+    add_reference :blog_contributors, :organization, null: false,default: 1
   end
 end

@@ -26,4 +26,10 @@ Rails.application.routes.draw do
   resources :categories, only: %i[index show] do
     resources :comments, only: %i[create index]
   end
+
+  namespace :admin do
+    get 'reports', to: 'reports#index'
+  end
+
+  get '/organizations', to: 'organizations#index'
 end

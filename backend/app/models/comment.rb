@@ -13,8 +13,12 @@
 #  index_comments_on_commentable  (commentable_type, commentable_id)
 #  index_comments_on_user_id      (user_id)
 class Comment < ApplicationRecord
+  TABLES = %w[Blog Category].freeze
+
   acts_as_tenant :organization
+
   belongs_to :user
   belongs_to :commentable, polymorphic: true
-  validates :commentable_type, inclusion: { in: %w[Blog Category] }
+
+  validates :commentable_type, inclusion: { in: TABLES }
 end

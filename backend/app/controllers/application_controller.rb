@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+# controller for all the controllers in the application
 class ApplicationController < ActionController::API
   set_current_tenant_through_filter
   before_action :devise_params, if: :devise_controller?
@@ -17,14 +18,15 @@ class ApplicationController < ActionController::API
   private
 
   def set_current_tenant
-    subdomain = request.subdomain
-
-    organization = Organization.find_by(subdomain: subdomain)
-
-    if organization
-      ActsAsTenant.current_tenant = organization
-    else
-      render json: { error: 'Organization not found' }, status: :not_found
+    if request.subdomain == 'www'
+      ActsAsTenant.current_tenant = nil
+      return
     end
+
+    organization = Organization.find_by(subdomain: request.subdomain)
+
+    raise ActiveRecord::RecordNotFound, 'Organization not found' unless organization
+
+    ActsAsTenant.current_tenant = organization
   end
 end

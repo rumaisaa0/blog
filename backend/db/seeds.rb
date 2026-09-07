@@ -22,7 +22,8 @@ admin = User.create!(
   password: 'password123',
   password_confirmation: 'password123',
   role: 'admin',
-  username: 'user_11'
+  username: 'user_11',
+  organization_id: 1
 )
 
 users = User.create!([

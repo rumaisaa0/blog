@@ -10,9 +10,16 @@ const api = axios.create({
 api.interceptors.request.use((config) => {
   const token = localStorage.getItem("token");
 
+  // Ensure headers object exists
+  config.headers = config.headers || {};
+
+  // Attach token if present (adjust scheme if your backend expects a different one)
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
+
+  // Ask the API for JSON responses so Rails doesn't return HTML views
+  config.headers.Accept = "application/json";
 
   return config;
 });
@@ -44,10 +51,12 @@ export const approveEditRequest = (blogId, requestId) => api.patch(`/blogs/${blo
 export const rejectEditRequest = (blogId, requestId) => api.patch(`/blogs/${blogId}/edit_requests/${requestId}/reject`);
 // Categories
 export const getCategories = () => api.get("/categories");
+
+export const getAdminReport = (params = {}) =>  api.get("/admin/reports", {params});
 // Contributors
 
 export const getUsers = () => api.get("/users");
-
+export const getOrganizations = () => axios.get("/organizations");
 export const addContributor = (blogId, userId) =>
   api.post(`/blogs/${blogId}/contributors`, { user_id: userId,});
 

@@ -37,9 +37,14 @@ export default function NavBar() {
       {user ? (
         <>
           {" | "}
+           {user?.role === "admin" && (
+            <Link to="/admin/reports">Admin Reports</Link>)}
+           {" | "} 
           <Link to="/profile">{user.username}</Link>
+           
           {user.role === "admin" && " (admin)"}
           {" | "}
+
           <button onClick={handleLogout}>{t("common.logout")}</button>
         </>
       ) : (

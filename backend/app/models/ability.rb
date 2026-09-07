@@ -3,61 +3,47 @@
 class Ability
   include CanCan::Ability
 
+
+  include UserAbility
+  include CategoryAbility
+  include CommentAbility 
+  include BlogEditRequestAbility
+  include BlogContributorAbility
+  include BlogAbility
+
   def initialize(user)
     user ||= User.new # guest
 
-    if user.persisted? && user.role == 'admin'
-      can :manage, :all
+    if user.admin?
+      admin_permissions(user)
 
-    elsif user.persisted? && user.role == 'registered'
+    elsif user.registered?
       registered_permissions(user)
 
-    else
+    elsif user.guest?
       # guest — not logged in
-      can :read, Category
-      can :read, Blog
-      can :read, Comment
+       guest_permissions
     end
-    # Define abilities for the user here. For example:
-    #
-    #   return unless user.present?
-    #   can :read, :all
-    #   return unless user.admin?
-    #   can :manage, :all
-    #
-    # The first argument to `can` is the action you are giving the user
-    # permission to do.
-    # If you pass :manage it will apply to every action. Other common actions
-    # here are :read, :create, :update and :destroy.
-    #
-    # The second argument is the resource the user can perform the action on.
-    # If you pass :all it will apply to every resource. Otherwise pass a Ruby
-    # class of the resource.
-    #
-    # The third argument is an optional hash of conditions to further filter the
-    # objects.
-    # For example, here the user can only update published articles.
-    #
-    #   can :update, Article, published: true
-    #
-    # See the wiki for details:
-    # https://github.com/CanCanCommunity/cancancan/blob/develop/docs/define_check_abilities.md
   end
 
   private
 
   def registered_permissions(user)
-    can :read, Category
+
+    blog_contributor_permissions(user)
+    blog_edit_request_permissions(user)
+    blog_permissions(user)
+    comment_permissions(user)
+    user_permissions(user)
+    category_permissions(user)
+  end
+
+  def guest_permissions 
+    can :read, Category 
     can :read, Blog
-    can :create, Blog
-    can :update, Blog, user_id: user.id
-    can :destroy, Blog, user_id: user.id
-    can :create, Comment
     can :read, Comment
-    can :read, User
-    can :update, User, id: user.id
-    can :manage, BlogContributor, blog: { user_id: user.id }
-    can :create, BlogEditRequest, contributor_id: user.id
-    can :manage, BlogEditRequest, blog: { user_id: user.id }
+  end
+  def admin_permissions (user)
+    can :manage, :all , organization_id: user.organization_id
   end
 end

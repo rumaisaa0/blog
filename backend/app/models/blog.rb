@@ -13,6 +13,24 @@
 #  index_blogs_on_category_id  (category_id)
 #  index_blogs_on_user_id      (user_id)
 class Blog < ApplicationRecord
+  acts_as_tenant :organization
+  
+  include Elasticsearch::Model
+  include Elasticsearch::Model::Callbacks
+
+
+  settings index: {
+    number_of_shards: 1,
+    number_of_replicas: 0
+  } do
+    mappings dynamic: false do
+      indexes :title, type: 'text'
+      indexes :content, type: 'text'
+      indexes :organization_id, type: 'integer'
+    end
+  end
+
+
   belongs_to :user
   belongs_to :category
   has_many :blog_contributors, dependent: :destroy
@@ -20,8 +38,24 @@ class Blog < ApplicationRecord
   has_many :blog_edit_requests, dependent: :destroy
   has_many :comments, as: :commentable
   has_one_attached :image
-  acts_as_tenant :organization
+
   validates :title, presence: true, length: { maximum: 255 }
-  validates :content, presence: true
-  validates :category, presence: true
+  validates :content, :category, presence: true
+
+
+  def self.search(query, organization_id:, page: 1, per_page: 10)
+  from = (page - 1) * per_page
+  filters = []
+
+  if organization_id.present?
+    filters << { term: {  organization_id: organization_id }  }
+  end
+  __elasticsearch__.search(
+    query: {
+      bool: {
+        must: {multi_match: { query: query, fields: %w[title content], fuzziness: 'AUTO' }},
+        filter: filters}
+    },
+    from: from, size: per_page)
+  end
 end

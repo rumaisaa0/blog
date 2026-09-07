@@ -1,7 +1,7 @@
-import { useState } from "react";
+import { useState,useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useDispatch } from "react-redux";
-import { signUp } from "../api";
+import { signUp,getOrganizations } from "../api";
 import { setUser } from "../slice/Auth";
 import { toast } from "react-toastify";
 import { useTranslation } from "react-i18next";
@@ -14,20 +14,40 @@ export default function Register() {
     email: "",
     password: "",
     password_confirmation: "",
+    organization_id: "",
+  organization_name: "",
   });
+  const [organizationType, setOrganizationType] = useState("existing"); 
+  const [organizations, setOrganizations] = useState([]);
+  useEffect(() => {
+  const fetchOrganizations = async () => {
+    try {
+      const response = await getOrganizations();
+      setOrganizations(response.data);
+    } catch (error) {
+      toast.error("Failed to load organizations");
+    }
+  };
 
+  fetchOrganizations();
+  }, []);
   const handleChange = (e) => {
     setForm((prev) => ({
       ...prev,
       [e.target.name]: e.target.value,
     }));
   };
-
+  const handleOrganizationTypeChange = (e) => { setOrganizationType(e.target.value); 
+    setForm((prev) => ({ ...prev, organization_id: "", organization_name: "", })); };
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+    const data = { username: form.username, email: form.email, password: form.password, password_confirmation: form.password_confirmation, };
+    if (organizationType === "existing")
+         { data.organization_id = form.organization_id; } 
+    else 
+        { data.organization = { name: form.organization_name, }; }
     try {
-      const response = await signUp(form);
+      const response = await signUp(data);
 
       localStorage.setItem("token", response.data.token);
       dispatch(setUser(response.data.user));
@@ -64,7 +84,20 @@ export default function Register() {
           <label>{t("auth.confirmPassword")}</label>
           <input type="password" name="password_confirmation" value={form.password_confirmation} onChange={handleChange} required />
         </div>
-
+       <div> 
+        <label>Organization</label> 
+        <select value={organizationType} onChange={handleOrganizationTypeChange} > 
+            <option value="existing">Join existing company</option> 
+            <option value="new">Create new company</option> </select>
+         </div> 
+         {organizationType === "existing" && ( <div> <label>Choose company</label> <select name="organization_id" value={form.organization_id} onChange={handleChange} required > 
+            <option value="">Select a company</option> 
+            {organizations.map((organization) => ( <option key={organization.id} value={organization.id}> {organization.name} </option> ))} 
+            </select>
+             </div> )} 
+            {organizationType === "new" && ( <div> <label>Company name</label> 
+            <input name="organization_name" value={form.organization_name} onChange={handleChange} placeholder="Enter company name" required /> 
+            </div> )}
         <button type="submit">{t("common.register")}</button>
       </form>
 

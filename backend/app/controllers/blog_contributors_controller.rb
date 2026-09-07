@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+# blog_contributors_controller.rb
 class BlogContributorsController < ApplicationController
   respond_to :json
   before_action :set_blog

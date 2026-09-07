@@ -457,3 +457,34 @@ textarea {
 }
 
 
+.admin-report {
+  padding: 20px;
+}
+
+
+.report-filters {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.report-filters input,
+.report-filters select {
+  padding: 8px;
+}
+
+.report-section {
+  margin-bottom: 20px;
+}
+
+.report-section table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.report-section th,
+.report-section td {
+  padding: 10px;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
+}

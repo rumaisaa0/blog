@@ -11,7 +11,7 @@ import Profile from "../pages/Profile";
 import VerifyEmail from "../pages/VerifyEmail";
 import AuthRoute from "./AuthRoute";
 import ManageContributors from "../pages/ManageContributors";
-
+import AdminReport from "../pages/AdminReport";
 export default function AppRoutes() {
   return (
     <Routes>
@@ -23,6 +23,7 @@ export default function AppRoutes() {
       <Route path="/blogs/:id/contributors" element={<ManageContributors />} />
       <Route path="/verify-email" element={<VerifyEmail />} />
       <Route element={<AuthRoute />}>
+        <Route path="/admin/reports" element={<AdminReport />} />
         <Route path="/blogs/new" element={<CreateBlog />} />
         <Route path="/blogs/:id/edit" element={<EditBlog />} />
         <Route path="/profile" element={<Profile />} />

@@ -6,26 +6,47 @@ class BlogsController < ApplicationController
   load_and_authorize_resource
 
   def index
-    blogs = Blog.includes(:user, :category)
-
+    page = params[:page].to_i
+    page = 1 if page <= 0
+    per_page = 10
+    organization_id = ActsAsTenant.current_tenant&.id
     if params[:search].present?
-      blogs = @blogs.where('title LIKE :query OR content LIKE :query', query: "%#{params[:search].strip}%")
+      search_results = Blog.search(params[:search].strip,
+        organization_id: organization_id, page: page, per_page: per_page )
+
+      blogs = search_results.records.includes(:user, :category)
+
+      total_entries = search_results.results.total
+    else
+      blogs = Blog.includes(:user, :category)
+
+      blogs = blogs.unscoped if organization_id.nil?
+
+      total_entries = blogs.count
+      blogs = blogs.paginate(page: page, per_page: per_page)
     end
-
-    page = params[:page].to_s
-    page = 1 if page.blank? || page == 'NaN' || page.to_i <= 0
-
-    blogs = blogs.paginate(page: page, per_page: 10)
+    total_pages = (total_entries.to_f / per_page).ceil
 
     render json: {
-      blogs: blogs,
+      blogs: blogs.as_json(
+      include: {
+        user: {
+          only: %i[id username]
+        },
+        category: {
+          only: %i[id name]
+        }
+      }
+    ),
       pagination: {
-        current_page: blogs.current_page,
-        total_pages: blogs.total_pages,
-        total_entries: blogs.total_entries
+        current_page: page,
+        total_pages: total_pages,
+        total_entries: total_entries
       }
     }
   end
+  
+
 
   def show
     # render json: @blog.as_json(include: [:comments, :category, :user])

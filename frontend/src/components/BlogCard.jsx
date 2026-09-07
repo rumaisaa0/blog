@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { useTranslation } from "react-i18next";
+import { Eye, Trash2 } from "lucide-react";
 export default function BlogCard({ blog, onDelete }) {
   const user = useSelector((state) => state.auth.user);
   const { t } = useTranslation();
@@ -21,23 +22,23 @@ export default function BlogCard({ blog, onDelete }) {
       </td>
 
       <td>
-        {/* {blog.category?.name || blog.category_id} */}
-        {blog.category?.name }
+        {blog.category.name}
+        {/* {blog.category?.name } */}
 
       </td>
 
       <td>
-        {/* {blog.user?.username || blog.user_id} */}
-        {blog.user?.username }
+        {blog.user.username}
+        {/* {blog.user?.username } */}
 
       </td>
 
       <td>
         <div className="actions">
-        <Link className="link-btn"  to={`/blogs/${blog.id}`} > {t("common.readMore")} </Link>
+        <Link className="link-btn"  to={`/blogs/${blog.id}`} title={t("common.readMore")}   > <Eye size={18} /> </Link>
 
         {canManage && onDelete && (
-          <button onClick={() => onDelete(blog.id)}className="red-btn"> {t("common.delete")} </button>
+          <button onClick={() => onDelete(blog.id)}className="red-btn" title={t("common.delete")}>  <Trash2 size={18} /> </button>
         )}
         </div>
       </td>
