@@ -1,0 +1,43 @@
+{
+  "common": {
+    "home": "Home",
+    "blogs": "Blogs",
+    "login": "Login",
+    "register": "Register",
+    "logout": "Logout",
+    "create": "Create",
+    "edit": "Edit",
+    "delete": "Delete",
+    "cancel": "Cancel",
+    "save": "Save",
+    "loading": "Loading....",
+    "readMore": "Read More .."
+  },
+  "auth": {
+
+    "email": "Email",
+    "username": "Username",
+    "password": "Password",
+    "confirmPassword": "Confirm Password",
+    "noAccount": "Don't have an account?  ",
+    "alreadyAccount": "Already have an account?   ",
+    "registrationFailed": "Registration failed",
+    "updateFailed" :"Update Failed!",
+    "noToken": "No authentication token",
+    "logoutFail": "Logout Failed!"
+  },
+  "blogs": {
+    "title": "Blogs",
+    "createBlog": "Create Blog",
+    "content": "Content",
+    "category": "Category",
+    "author": "Author",
+    "actions": "Actions",
+    "searchPlaceholder": "Search blogs...",
+    "selectCategory": "Select category"
+  },
+  "comments":{
+    "comments": "Comments",
+    "add": "Add Comment"
+  }
+}
