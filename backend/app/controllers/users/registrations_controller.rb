@@ -16,10 +16,11 @@ module Users
     # POST /resource
     def create
       resource = build_resource(sign_up_params)
-      organization = find_or_create_organization
+      organization , new_organization = find_or_create_organization
       return organization_missing if organization.nil?
 
       resource.organization = organization
+      resource.role = new_organization ? 'admin' : 'registered'
       if resource.save
         render json: success_response(resource, organization),
                status: :created
@@ -87,12 +88,12 @@ module Users
       organization_name = params.dig(:user, :organization, :name)
 
       if organization_id.present?
-        Organization.find_by(id: organization_id)
+        [Organization.find_by(id: organization_id), false]
       elsif organization_name.present?
         name = organization_name.strip
         subdomain = name.parameterize
         subdomain = "#{name.parameterize}-#{SecureRandom.hex(2)}" while Organization.exists?(subdomain: subdomain)
-        Organization.create(name: name, subdomain: subdomain)
+        [Organization.create(name: name, subdomain: subdomain), true]
       end
     end
 

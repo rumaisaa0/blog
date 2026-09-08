@@ -7,12 +7,22 @@
 
 # Read more: https://github.com/cyu/rack-cors
 
+
 Rails.application.config.middleware.insert_before 0, Rack::Cors do
   allow do
-    origins 'localhost:5173', 'http://localhost:5173', 'http://www.localhost:5173',
-            'http://company1.localhost:5173', 'http://company-two.localhost:5173',
-            'http://company3.localhost:5173', 'http://company4.localhost:5173',
-            'http://company5.localhost:5173', 'http://default.localhost:5173'
+    origins do |origin|
+      next true if origin == 'http://localhost:5173'
+
+      uri = URI.parse(origin)
+
+      next false unless uri.scheme == 'http'
+      next false unless uri.port == 5173
+      next false unless uri.host.end_with?('.localhost')
+
+      subdomain = uri.host.delete_suffix('.localhost')
+
+      Organization.exists?(subdomain: subdomain)
+    end
 
     resource '*',
              headers: :any,

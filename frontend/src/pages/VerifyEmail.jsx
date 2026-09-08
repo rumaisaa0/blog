@@ -1,10 +1,12 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useModal } from "../ModalContext";
 import api from "../api";
+
+const verificationRequests = new Set();
 
 function VerifyEmail() {
   const [status, setStatus] = useState("Verifying your email...");
-  const navigate = useNavigate();
+  const { openModal } = useModal();
 
   useEffect(() => {
     const token = new URLSearchParams(window.location.search)
@@ -15,31 +17,31 @@ function VerifyEmail() {
       return;
     }
 
+    if (verificationRequests.has(token)) {
+      return;
+    }
+
+    verificationRequests.add(token);
+
     api.get("/users/confirmation", {
-      params: {
-        confirmation_token: token,
-      },
+      params: { confirmation_token: token },
     })
       .then(() => {
         setStatus("Email verified successfully!");
 
-        setTimeout(() => {
-          navigate("/login");
-        }, 2000);
+        setTimeout(() => { openModal("login");   }, 2000);
       })
       .catch((error) => {
         setStatus(
           error.response?.data?.errors?.join(", ") ||
-          "Unable to verify your email."
-        );
+          "Unable to verify your email."  );
       });
-  }, [navigate]);
+  }, [openModal]);
 
   return (
     <div>
       <h2>{status}</h2>
-    </div>
-  );
+    </div>);
 }
 
 export default VerifyEmail;

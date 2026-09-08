@@ -13,7 +13,7 @@ class BlogsController < ApplicationController
     blogs, total_entries = search(params[:search], organization_id, page, per_page)
     # total_pages = (total_entries.to_f / per_page).ceil
 
-    render json: blogs_response(blogs, total_entries)
+    render json: blogs_response(blogs, total_entries,page, per_page)
   end
 
   def show
@@ -70,12 +70,12 @@ class BlogsController < ApplicationController
     [blogs, total_entries]
   end
 
-  def blogs_response(blogs, total_entries)
+  def blogs_response(blogs, total_entries,page, per_page)
     { blogs: blogs.as_json(
       include: { user: { only: %i[id username] },
                  category: { only: %i[id name] } }
     ),
-      pagination: { current_page: current_page,
+      pagination: { current_page: page,
                     total_pages: (total_entries.to_f / per_page).ceil,
                     total_entries: total_entries } }
   end

@@ -13,4 +13,6 @@ class Category < ApplicationRecord
   acts_as_tenant :organization
 
   has_many :blogs
+
+  validates :name, presence: true, uniqueness: { scope: :organization_id }
 end

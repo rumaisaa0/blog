@@ -93,8 +93,8 @@ export default function Blogs() {
       <hr />
       <table>
         <thead>
-         <tr><h1>
-            <th>Title</th></h1>
+         <tr>
+            <th>Title</th>
             <th>Content</th>
             <th>Category</th>
             <th>Author</th>
